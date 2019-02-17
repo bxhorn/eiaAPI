@@ -7,20 +7,21 @@
 # Author:       Brad Horn
 # License:      GPL (>=2)
 #
-# Description:  Creat a map of all data series IDs for each element in the WPS report
-#               to support automated API calls to eia to download all WPS time series
-#               data.
+# Description:  Map all data series IDs for each element in the WPS report. Use the
+#               map to re-create the weekly report using automated API calls to eia.
+#               Downloaded production, storage and price data is then subject to tidy
+#               work handling, table and plot creation.
 #
 # Details:      NA
 #
 # Dev.Notes:    NA
 #
 # Depends:      See the configuration script Config_Trading.R in project config folder;
-#               See custom package eiaAPI for functions to interface with the eia API
-#               An eia API security key is requried
+#               See the custom package eiaAPI for eia API interface functions. An eia
+#               API security key is required to use the functions.
 #
 # References:   See https://www.eia.gov/opendata/register.php for API key registration
-#               See https://www.eia.gov/opendata/commands.php for API commands
+#               See https://www.eia.gov/opendata/commands.php for API command syntax
 ##----------------------------------------------------------------------------------------##
 
 # 0.Configure Workspace ----
