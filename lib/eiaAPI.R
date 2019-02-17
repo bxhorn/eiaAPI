@@ -1,25 +1,25 @@
 # Header ----
 #
-# Package:     eiaAPI
+# Name:        eiaAPI
 #
-# Title:       A robust set of tools for interfacing with EIA's open data and API.
-#
-# Description: This package provides a comprehensive toolset for searching and
-#              retrieving open energy data from EIA. R functions have been designed
-#              to simplify API interface, to expand EIA data search capabilities, and
-#              to make EIA data more accessible.  Data downloads include single or
-#              mutltiple time series, bulk data blocks, incremental data updates, and
-#              spatial data objects.
-#
-# Note:        https://www.eia.gov/opendata/register.php for API key registration and
-#              http://bxhorn.com/eiaAPI for package vignette and expamples
+# Title:       Tools for interfacing with eia's open data API.
 #
 # Version:     1.0.0
 # Date:        2017-Jul-01
 # Author:      Bradley Horn
 # Maintainer:  Bradley Horn <bxhorn@gmail.com>
 # License:     GPL (>=2)
-# Depends:     base R, RCurl, RJSONIO, lubridate, dplyr, tiblle, stringr
+#
+# Description: Comprehensive tools for searching and retrieving open data from eia. R
+#              functions simplify API interface and command syntax, expand eia data
+#              search capabilities, and make eia data more accessible. Data downloads
+#              include single or mutltiple time series, bulk data blocks, incremental
+#              data updates, and spatial data objects.  All functions return data in
+#              a tidy format using modern data frames or "tibble"  objects (tbl_df).
+#
+# Note:        https://www.eia.gov/opendata/register.php for API key registration
+#
+# Depends:     base R, RCurl, RJSONIO, lubridate, dplyr, tibble, stringr
 #
 # Dev.Notes:   1) call.EIA needs to be able to take multiple series IDs seperated by
 #              semicolons (up to 100).  To this end, need to assess the length of the
@@ -29,49 +29,43 @@
 ##-------------------------------------------------------------------------------------------##
 
 # 0.Initialize Code ----
-library(RCurl)
-library(RJSONIO)
-library(lubridate)
-library(dplyr)
-library(tibble)
-library(stringr)
-options(tibble.print_max = 70, tibble.print_min = 6)
-options(tibble.width = NULL)
-key <- "702dd5c99ca504ffa0c10e479e34f234"
+# configure work space
+#source("/home/bxhorn/Dropbox/Trading/R_Projects/NearbyPrices/config/Config_Trading.R")
 ##-------------------------------------------------------------------------------------------##
 
 # Browse Category ID's and Category Tree Structure (API Category Query)
 
 # Description:
-# The browse search method is an API wrapper to find data series using category ID's.
-# The API Category Query can be used recursively to unfold the category tree until a
-# specific data series or groups of series is found. Once the desired series are found,
-# data can be downloaded using retrieval calls to the API.
+#              The browse search method is an API function to find data series using
+#              category ID's. The API Category Query can be used recursively to unfold
+#              the category tree until a specific data series or groups of series is
+#              found. Once the desired series are found, data can be downloaded using
+#              retrieval calls to the API.
 
 # Usage:
-# browse.EIA(cat.ID = 371, key = NULL)
+#              browse.EIA(cat.ID = 371, key = NULL)
 
 # Arguments:
-# cat.ID       An EIA API category number.  371 is the top of the category tree
-# key          An API registration key supplied by EIA
+# cat.ID       An eia API category number.  371 is the top of the category tree
+# key          An API registration key supplied by eia
 
 # Author(s):
-# Bradley Horn
+#              Bradley Horn
 
 # Value:
-# A modern data.frame (tibble) with EIA data category IDs and names.  In the case that
-# the browse query has hit the terminal node in the category tree, then the function
-# returns data time series with IDs, names, frequency, units of measure, and the most
-# recent date data was updated
+#              A modern data.frame (tbl_df or tibble) with eia data category IDs and
+#              names.  When the query has hit a terminal node in the category tree,
+#              then the function returns data time series IDs, names, update frequency,
+#              units of measure, and the most recent date that data was updated
 
 # See Also:
-# search.EIA, call.EIA
+#              search.EIA, call.EIA
 
 # Examples:
-# show the top of the category tree
-browse.EIA(cat.ID = 371, key)
-# show data series for one of the lowest category levels
-browse.EIA(cat.ID = 761, key)
+#              show the top of the category tree
+#                  browse.EIA(cat.ID = 371, key)
+#              show data series for one of the lowest category levels
+#                  browse.EIA(cat.ID = 761, key)
 
 
 # Source Code:
@@ -191,18 +185,18 @@ search.EIA <- function(x = NULL,
 }
 
 # test function: series.ID
-search.EIA(x = "PET.MB", search.type = "series.ID")
-search.EIA(x = "PET.MB", search.type = "series.ID", filters.keep = "Annual")
+# search.EIA(x = "PET.MB", search.type = "series.ID")
+# search.EIA(x = "PET.MB", search.type = "series.ID", filters.keep = "Annual")
 
 # test function: keyword
-search.EIA(x = c("crude oil", "Alaska"), search.type = "keyword", rows = 500)
-search.EIA(x = c("crude oil", "Alaska"), search.type = "keyword",
-           filters.remove = c("Quarterly", "Annual"), rows = 500)
+# search.EIA(x = c("crude oil", "Alaska"), search.type = "keyword", rows = 500)
+# search.EIA(x = c("crude oil", "Alaska"), search.type = "keyword",
+#            filters.remove = c("Quarterly", "Annual"), rows = 500)
 
 # test function: date
-date1 <- "2017-06-14T00:00:00Z"
-date2 <- "2017-06-18T23:59:59Z"
-search.EIA(search.type = "date", start.date = date1, end.date = date2, rows = 1500)
+# date1 <- "2017-06-14T00:00:00Z"
+# date2 <- "2017-06-18T23:59:59Z"
+# search.EIA(search.type = "date", start.date = date1, end.date = date2, rows = 1500)
 
 
 ##-------------------------------------------------------------------------------------------##
@@ -251,9 +245,9 @@ call.EIA <- function(ID,
 }
 
 # test function
-key <- "702dd5c99ca504ffa0c10e479e34f234"
-ID <- "PET.W_EPC0_FPF_SAK_MBBLD.W"
-call.EIA(ID, key)
+# key <- "702dd5c99ca504ffa0c10e479e34f234"
+# ID <- "PET.W_EPC0_FPF_SAK_MBBLD.W"
+# call.EIA(ID, key)
 ##-------------------------------------------------------------------------------------------##
 
 
@@ -302,23 +296,23 @@ date.series <- function(series.code, data) {
 
 # Junk ---
 # different ways to extract data from JSON text structure (JavaScropt Object Notation)
-ID <- "NG.RNGC1.D"
-url <- paste0("http://api.eia.gov/series/?api_key=", key, "&series_id=", ID)
-txt <- getURLContent(url)
-dat <- fromJSON(txt, asText = TRUE, simplify = TRUE)
-test <- t(sapply(dat$series[[1]]$data, function(x) rbind(x)))
-test2 <- t(sapply(dat$series[[1]]$data, function(x) head(x)))
-test3 <- matrix(unlist(dat$series[[1]]$data), ncol = 2, byrow = TRUE)
-test4 <- do.call("rbind", lapply(dat$series[[1]]$data, function(x) head(x)))
+# ID <- "NG.RNGC1.D"
+# url <- paste0("http://api.eia.gov/series/?api_key=", key, "&series_id=", ID)
+# txt <- getURLContent(url)
+# dat <- fromJSON(txt, asText = TRUE, simplify = TRUE)
+# test <- t(sapply(dat$series[[1]]$data, function(x) rbind(x)))
+# test2 <- t(sapply(dat$series[[1]]$data, function(x) head(x)))
+# test3 <- matrix(unlist(dat$series[[1]]$data), ncol = 2, byrow = TRUE)
+# test4 <- do.call("rbind", lapply(dat$series[[1]]$data, function(x) head(x)))
 
 # test filters
-mtcars$type <- rownames(mtcars)
-mtcars %>%
-     filter(str_detect(type, 'Toyota|Mazda'))
-mtcars %>%
-     filter(!str_detect(type, 'Toyota|Mazda'))
+# mtcars$type <- rownames(mtcars)
+# mtcars %>%
+#      filter(str_detect(type, 'Toyota|Mazda'))
+# mtcars %>%
+#      filter(!str_detect(type, 'Toyota|Mazda'))
 
 # test multi character replace
-x <- "H.E_L-L.O"
-str_replace_all(x, "[\\.\\_\\-]", "")
+# x <- "H.E_L-L.O"
+# str_replace_all(x, "[\\.\\_\\-]", "")
 
