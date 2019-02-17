@@ -49,6 +49,7 @@ pkgs <- c(
      "openxlsx",                        # interface for MS Excel
      "Quandl",                          # API wrapper for Quandl.com
      "RCurl",                           # communicate with HTTP servers for data I/O
+     "rvest",                           # easily harvest (scrape) web pages
      "RJSONIO",                         # read/write JSON data (JavaScript Object Notation)
                                       # PROGRAMMING
      "magrittr",                        # pipe operators
@@ -70,7 +71,7 @@ pkgs <- c(
      "GGally",                          # extension of ggplot
      "scales",                          # scale and color functions for ggplot
      "bdscale",                         # remove weekends/holidays from ggplot axes
-     "RColorBrewer",                     # color ramps
+     "RColorBrewer",                    # color ramps
                                       # NETWORK VISUALIZATION
      "ape",                             # draw and analyze phylogenetic trees
      "phytools",                        # phylogenetic toolset
@@ -79,17 +80,23 @@ pkgs <- c(
 
 # load packages
 for (i in pkgs) {
-     suppressMessages(library(i, character.only = TRUE))
+      suppressMessages(library(i, character.only = TRUE))
 }
 rm(i)
 
 # resolve package conflicts
-combine <- dplyr::combine
 collapse <- dplyr::collapse
+combine <- dplyr::combine
+complete <- tidyr::complete
 extract <- tidyr::extract
+expand <- tidyr::expand
 discard <- purrr::discard
+map <- purrr::map
+pluck <- purrr::pluck
 set_names <- purrr::set_names
 getResponse <- forecast::getResponse
+kurtosis <- PerformanceAnalytics::kurtosis
+skewness <- PerformanceAnalytics::skewness
 ##-------------------------------------------------------------------------------------------##
 
 # 2.Project Paths ----
@@ -108,8 +115,8 @@ source.path <- file.path(getwd(), "src/")
 options(prompt = "R> ")
 options(width = 95)
 options(digits = 5, scipen = 4)
-options(tibble.print_max = 25)
-options(tibble.print_min = 15)
+options(tibble.print_max = 150)
+options(tibble.print_min = 50)
 options(tibble.width = NULL)
 options(pillar.bold = TRUE)
 options(pillar.subtle = FALSE)
@@ -155,5 +162,6 @@ key <- "702dd5c99ca504ffa0c10e479e34f234"
 ##-------------------------------------------------------------------------------------------##
 
 # 6.Source Custom Functions ----
-source("/home/bxhorn/Dropbox/Trading/R_Projects/NearbyPrices/lib/get_futures.R")
-source("/home/bxhorn/Dropbox/Trading/R_Projects/NearbyPrices/lib/get_term_structure.R")
+source(paste0(lib.path,"get_futures.R"))
+source(paste0(lib.path,"get_term_structure.R"))
+source(paste0(lib.path, "eiaAPI.R"))
