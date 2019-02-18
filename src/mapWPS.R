@@ -57,8 +57,71 @@ browse.EIA(cat.ID = 241335, key = key) %>%
 ##----------------------------------------------------------------------------------------##
 
 # 2. Call API (Series Query) ----
+# US petroleum balance sheet (table 1)
+cl_total <- "PET.WCRSTUS1.W"
+cl_commercial <- "PET.WCESTUS1.W"
+cl_SPR <- "PET.WCSSTUS1.W"
+rb_total <- "PET.WGTSTUS1.W"
+rb_reformulated <- "PET.WGRSTUS1.W"
+rb_conventional <- "PET.WG4ST_NUS_1.W"
+rb_blending.components <- "PET.WBCSTUS1.W"
+ethanol <- "PET.W_EPOOXE_SAE_NUS_MBBL.W"
+kerosene.jetfuel <- "PET.WKJSTUS1.W"
+ho_total <- "PET.WDISTUS1.W"
+ho_ULSD <- "PET.WD0ST_NUS_1.W"
+ho_15to500ppm <- "PET.WD1ST_NUS_1.W"
+ho_hisulfur <- "PET.WDGSTUS1.W"
+rfo <- "PET.WRESTUS1.W"
+propane <- "PET.WPRSTUS1.W"
+other.oils <- "PET.W_EPPO6_SAE_NUS_MBBL.W"
+unfinished.oils <- "PET.WUOSTUS1.W"
+us.total.stocks.spr <- "PET.WTTSTUS1.W"
+us.total.stochs <- "PET.WTESTUS1.W"
 
+# US stocks of crude oil by PAD district (table 4)
+cl_padd1 <- "PET.WCESTP11.W"
+cl_padd2 <- "PET.WCESTP21.W"
+cl_cushing <- "PET.W_EPC0_SAX_YCUOK_MBBL.W"
+cl_padd3 <- "PET.WCESTP31.W"
+cl_padd4 <- "PET.WCESTP41.W"
+cl_padd5 <- "PET.WCESTP51.W"
 
+# US stocks of motor gasoline (table 5)
+rb_padd1 <- "PET.WGTSTP11.W"
+rb_padd2 <- "PET.WGTSTP21.W"
+rb_padd3 <- "PET.WGTSTP31.W"
+rb_padd4 <- "PET.WGTSTP41.W"
+rb_padd5 <- "PET.WGTSTP51.W"
+
+# US stocks of distillates (table 6)
+ho_padd1 <- "PET.WDISTP11.W"
+ho_padd2 <- "PET.WDISTP21.W"
+hod_padd3 <- "PET.WDISTP31.W"
+ho_padd4 <- "PET.WDISTP41.W"
+ho_padd5 <- "PET.WDISTP51.W"
+
+# US imports of crude oil and products (table 7)
+cl_imports.net <- "PET.WCRNTUS2.W"
+cl_imports <- "PET.WCRIMUS2.W"
+cl_exports <- "PET.WCREXUS2.W"
+rb_imports <- "PET.WGTIMUS2.W"					     # total motor gasoline
+rb_exports <- "PET.W_EPM0F_EEX_NUS-Z00_MBBLD.W"             # finished gasoline
+ho_imports <- "PET.WDIIMUS2.W"
+ho_exports <- "PET.WDIEXUS2.W"
+
+# US production metrics (table 9)
+cl_production <- "PET.WCRFPUS2.W"
+refinery.runs <- "PET.WCRRIUS2.W"
+refinery.util <- "PET.WPULEUS3.W"
+
+# US spot prices (table 11)
+ho_spot.USG <- "PET.EER_EPD2DXL0_PF4_RGC_DPG.D"
+ho_spot.NYH <- "PET.EER_EPD2DXL0_PF4_Y35NY_DPG.D"
+no2_spot.NYH <- "PET.EER_EPD2F_PF4_Y35NY_DPG.D"
+rb_spot.USG <- "PET.EER_EPMRU_PF4_RGC_DPG.D"
+rb_spot.NYH <- "PET.EER_EPMRU_PF4_Y35NY_DPG.D"
+brent_spot <- "PET.RBRTE.D"
+wti_spot <- "PET.RWTC.D"
 
 
 
