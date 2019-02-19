@@ -162,6 +162,6 @@ key <- "702dd5c99ca504ffa0c10e479e34f234"
 ##-------------------------------------------------------------------------------------------##
 
 # 6.Source Custom Functions ----
-source(paste0(lib.path,"get_futures.R"))
-source(paste0(lib.path,"get_term_structure.R"))
+source(paste0('/home/bxhorn/Dropbox/Trading/R_Projects/NearbyPrices/lib/get_futures.R'))
+source(paste0('/home/bxhorn/Dropbox/Trading/R_Projects/NearbyPrices/lib/get_term_structure.R'))
 source(paste0(lib.path, "eiaAPI.R"))
