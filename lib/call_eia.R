@@ -17,8 +17,8 @@ key <- "702dd5c99ca504ffa0c10e479e34f234"
 # Download eia Data Series (Series Query)
 
 # Description:
-# Call the eia_API and download data by series ID. Arguments can be used to cache
-# data series or header information to disk.
+# Call the eia_API and download data by series ID. call function can be used for
+# single or bulk series downloads.
 
 # Usage:
 # call_eia(series.ID, key, cache.data = FALSE, cache.metadata = FALSE,
@@ -34,17 +34,16 @@ key <- "702dd5c99ca504ffa0c10e479e34f234"
 
 # Details:
 # The series.ID is a unique string required by the eia_API. A single call for 100
-# data series is supported by the API.  The function avoids this limitation and will
-# batch process all ID's for download in multiple API calls.
+# data series is supported by the API.  Arguments support data caching of data and/or
+# header information.
 
 # Value:
-# A modern data.frame (tibble) with the requested data series by date. The data series
-# ID is the assigned data object name.  Comma delimited text files are also created
-# and saved to disk if cache.data or cache.metadata are set to TRUE. The present
-# working directory is the default save path.
+# A modern data.frame of "tibble" (tbl.df) with the data series by date. The series
+# ID is the assigned data object name.  Data caching, if true, saves the series to
+# disk in R binary format.
 
 # Dev Notes:
-# Ensure function works with multiple series.ID's. Requires custom URL.
+# NA
 
 # Reference:
 # see https://www.eia.gov/opendata/register.php for API key registration and
@@ -55,9 +54,9 @@ key <- "702dd5c99ca504ffa0c10e479e34f234"
 
 # Examples:
 # single series download
-call_eia("PET.W_EPC0_FPF_SAK_MBBLD.W", key, TRUE, TRUE)
+call_eia(series.ID, key, TRUE, TRUE, cache.path = cache.path)
 # multiple series download
-series.ID <- "ELEC.CONS_TOT_BTU.NG-AK-96.A"
+series.ID <- "PET.W_EPC0_FPF_SAK_MBBLD.W"
 series.ID <- c("PET.W_EPC0_FPF_SAK_MBBLD.W", "ELEC.CONS_TOT_BTU.NG-AK-96.A")
 
 
@@ -80,7 +79,7 @@ call_eia <- function(series.ID = NULL,
                call. = FALSE)
      }
      n.series <- length(series.ID)
-     #define query URL
+     # define query URL
      if (n.series > 1) {
           series.ID <- gsub(", ",";",toString(series.ID))
      }
@@ -100,15 +99,15 @@ call_eia <- function(series.ID = NULL,
                set_colnames(c("Date", series.ID))
           # cache data
           if (cache.metadata == TRUE) {
-               file.name <- paste0(cache.path, "/", series.ID, "_meta.data.csv")
-               capture.output(str(dat, max.level = 3), file = file.name)
+               temp.dat <- capture.output(str(dat, max.level = 3))
+               save(list = "temp.dat", file = paste0(cache.path, "/", series.ID, "_meta.data.Rdata"))
           }
           if (cache.data == TRUE) {
-               file.name <- paste0(cache.path, "/", series.ID, "_data.csv")
-               write.csv(dat.tbl, file = file.name)
+               save(list = "dat.tbl", file = paste0(cache.path, "/", series.ID, ".Rdata"))
           }
-          return(assign(series.ID, dat.tbl))
+          assign(series.ID, dat.tbl, envir = .GlobalEnv)
      }
+     # bulk data download
      if (n.series > 1) {
           series.ID <- unlist(strsplit(series.ID, ";"))
           for (i in 1:n.series) {
@@ -119,6 +118,15 @@ call_eia <- function(series.ID = NULL,
                                  value = as.numeric(unlist(dat.df[,2]))) %>%
                     arrange(., Date) %>%
                     set_colnames(c("Date", series.ID[i]))
+               # cache data
+               if (cache.metadata == TRUE) {
+                    temp.dat <- capture.output(str(dat, max.level = 3))
+                    save(list = "temp.dat", file = paste0(cache.path, "/", series.ID[i], "_meta.data.Rdata"))
+               }
+               if (cache.data == TRUE) {
+                    save(list = "dat.tbl", file = paste0(cache.path, "/", series.ID[i], ".Rdata"))
+               }
+               assign(series.ID[i], dat.tbl, envir = .GlobalEnv)
           }
      }
 }

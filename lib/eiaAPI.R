@@ -201,47 +201,74 @@ search.EIA <- function(x = NULL,
 
 ##-------------------------------------------------------------------------------------------##
 
-call.EIA <- function(ID,
+call_eia <- function(series.ID = NULL,
                      key = NULL,
-                     cache.meta.data = FALSE,
                      cache.data = FALSE,
+                     cache.metadata = FALSE,
                      cache.path = getwd()) {
 
-     # confirm ID and EIA key
-     if (!is.character(ID)) {
-          stop("The data series ID must be a character string to call EIA",
-               call. = FALSE)
+     # confirm series.ID and key
+     if (is.null(series.ID)) {
+          stop("Error - series.ID is NULL.  Enter one or more series ID's.")
+     }
+     if (!is.character(series.ID)) {
+          stop("Error - series.ID must be a character string or vector")
      }
      if (is.null(key)) {
-          stop("Invalid or missing api_key ... see https://www.eia.gov/opendata/register.php",
+          stop("Invalid or missing api_key. See https://www.eia.gov/opendata/register.php",
                call. = FALSE)
      }
-
+     n.series <- length(series.ID)
+     # define query URL
+     if (n.series > 1) {
+          series.ID <- gsub(", ",";",toString(series.ID))
+     }
+     url <- paste0("http://api.eia.gov/series/?series_id=", series.ID, "&api_key=",
+                   key, "&out=json")
      # download JSON data
-     url <- paste0("http://api.eia.gov/series/?api_key=", key, "&series_id=", ID)
      txt <- getURLContent(url)
-
-     # format return data and configure based on series type
-     dat <- fromJSON(txt, asText = TRUE, simplify = TRUE)
-     dat.df <- as.data.frame(do.call("rbind", lapply(dat$series[[1]]$data,
-                                                     function(x) head(x))),
-                             stringsAsFactors = FALSE)
-     type <- gsub(".*(.)$", "\\1", ID)
-     dat.tbl <- tibble(Date = date.series(type, dat.df),
-                       value = dat.df[, -1]) %>%
-          arrange(., Date)
-     names(dat.tbl) <- c("Date", ID)
-
-     # cache data
-     if (cache.meta.data == TRUE) {
-          file.name <- paste0(cache.path, "/", ID, "_meta.data.csv")
-          capture.output(str(dat, max.level = 3), file = file.name)
+     dat <- fromJSON(txt, asText = TRUE, simplify = TRUE, nullValue = NA)
+     # format query data and configure based on series length
+     if (n.series == 1) {
+          dat.df <- as.data.frame(
+               do.call("rbind", lapply(dat$series[[1]]$data, function(x) head(x))),
+               stringsAsFactors = FALSE)
+          dat.tbl <- tibble(Date = datetime.EIA(series.ID, dat.df),
+                            value = as.numeric(unlist(dat.df[,2]))) %>%
+               arrange(., Date) %>%
+               set_colnames(c("Date", series.ID))
+          # cache data
+          if (cache.metadata == TRUE) {
+               temp.dat <- capture.output(str(dat, max.level = 3))
+               save(list = "temp.dat", file = paste0(cache.path, "/", series.ID, "_meta.data.Rdata"))
+          }
+          if (cache.data == TRUE) {
+               save(list = "dat.tbl", file = paste0(cache.path, "/", series.ID, ".Rdata"))
+          }
+          assign(series.ID, dat.tbl, envir = .GlobalEnv)
      }
-     if (cache.data == TRUE) {
-          file.name <- paste0(cache.path, "/", ID, "_data.csv")
-          write.csv(dat.tbl, file = file.name)
+     # bulk data download
+     if (n.series > 1) {
+          series.ID <- unlist(strsplit(series.ID, ";"))
+          for (i in 1:n.series) {
+               dat.df <- as.data.frame(
+                    do.call("rbind", lapply(dat$series[[i]]$data, function(x) head(x))),
+                    stringsAsFactors = FALSE)
+               dat.tbl <- tibble(Date = datetime.EIA(series.ID[i], dat.df),
+                                 value = as.numeric(unlist(dat.df[,2]))) %>%
+                    arrange(., Date) %>%
+                    set_colnames(c("Date", series.ID[i]))
+               # cache data
+               if (cache.metadata == TRUE) {
+                    temp.dat <- capture.output(str(dat, max.level = 3))
+                    save(list = "temp.dat", file = paste0(cache.path, "/", series.ID[i], "_meta.data.Rdata"))
+               }
+               if (cache.data == TRUE) {
+                    save(list = "dat.tbl", file = paste0(cache.path, "/", series.ID[i], ".Rdata"))
+               }
+               assign(series.ID[i], dat.tbl, envir = .GlobalEnv)
+          }
      }
-     return(dat.tbl)
 }
 
 # test function
@@ -254,35 +281,36 @@ call.EIA <- function(ID,
 ##-------------------------------------------------------------------------------------------##
 
 # Support functions
-date.series <- function(series.code, data) {
-     switch(series.code,
+datetime.EIA <- function(series.ID, data) {
+     type <- gsub(".*(.)$", "\\1", series.ID)
+     switch(type,
             A = {Date <- make_date(year = as.numeric(data[, "V1"]), month = 12, day = 31)
             },
             Q = {yr <- matrix(unlist(strsplit(data[,1], "Q")), ncol = 2, byrow = TRUE)[, 1]
-                 mo <- matrix(unlist(strsplit(data[,1], "Q")), ncol = 2, byrow = TRUE)[, 2]
-                 Date <- make_date(year = as.numeric(yr), month = as.numeric(mo) * 3,
-                                   day = days_in_month(as.numeric(mo) * 3))
+            mo <- matrix(unlist(strsplit(data[,1], "Q")), ncol = 2, byrow = TRUE)[, 2]
+            Date <- make_date(year = as.numeric(yr), month = as.numeric(mo) * 3,
+                              day = days_in_month(as.numeric(mo) * 3))
             },
             M = {yr <- as.numeric(substr(data[, 1], 1, 4))
-                 mo <- as.numeric(substr(data[, 1], 5, 6))
-                 Date <- make_date(year = yr, month = mo, day = days_in_month(mo))
+            mo <- as.numeric(substr(data[, 1], 5, 6))
+            Date <- make_date(year = yr, month = mo, day = days_in_month(mo))
             },
             W = {yr <- as.numeric(substr(data[, 1], 1, 4))
-                 mo <- as.numeric(substr(data[, 1], 5, 6))
-                 dy <- as.numeric(substr(data[, 1], 7, 8))
-                 Date <- make_date(year = yr, month = mo, day = dy)
+            mo <- as.numeric(substr(data[, 1], 5, 6))
+            dy <- as.numeric(substr(data[, 1], 7, 8))
+            Date <- make_date(year = yr, month = mo, day = dy)
             },
             D = {yr <- as.numeric(substr(data[, 1], 1, 4))
-                 mo <- as.numeric(substr(data[, 1], 5, 6))
-                 dy <- as.numeric(substr(data[, 1], 7, 8))
-                 Date <- make_date(year = yr, month = mo, day = dy)
+            mo <- as.numeric(substr(data[, 1], 5, 6))
+            dy <- as.numeric(substr(data[, 1], 7, 8))
+            Date <- make_date(year = yr, month = mo, day = dy)
             },
             H = {yr <- as.numeric(substr(data[, 1], 1, 4))
-                 mo <- as.numeric(substr(data[, 1], 5, 6))
-                 dy <- as.numeric(substr(data[, 1], 7, 8))
-                 hr <- as.numeric(substr(data[, 1], 10, 11))
-                 Date <- make_datetime(year = yr, month = mo, day = dy, hour = hr,
-                                       min = 59, sec = 59)
+            mo <- as.numeric(substr(data[, 1], 5, 6))
+            dy <- as.numeric(substr(data[, 1], 7, 8))
+            hr <- as.numeric(substr(data[, 1], 10, 11))
+            Date <- make_datetime(year = yr, month = mo, day = dy, hour = hr,
+                                  min = 59, sec = 59)
             },
             stop("The data series ID must end with A, Q, M, W, D or H to call EIA",
                  call. = FALSE)
