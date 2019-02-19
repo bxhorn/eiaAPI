@@ -78,7 +78,14 @@ unfinished.oils <- "PET.WUOSTUS1.W"
 us.total.stocks.spr <- "PET.WTTSTUS1.W"
 us.total.stochs <- "PET.WTESTUS1.W"
 
-# US stocks of crude oil by PAD district (table 4)
+series.ID <- c(cl_total, cl_commercial, cl_SPR, rb_total, rb_reformulated,
+              rb_conventional, rb_blending.components, ethanol, kerosene.jetfuel,
+              ho_total, ho_ULSD, ho_15to500ppm, ho_hisulfur, rfo, propane, other.oils,
+              unfinished.oils, us.total.stocks.spr, us.total.stochs)
+series.ID %>%
+     map(function(x) call_eia(x, key = key, cache.data = TRUE, cache.metadata = TRUE))
+
+# US stocks of crude by PAD district (table 4)
 cl_padd1 <- "PET.WCESTP11.W"
 cl_padd2 <- "PET.WCESTP21.W"
 cl_cushing <- "PET.W_EPC0_SAX_YCUOK_MBBL.W"
