@@ -1,24 +1,24 @@
 # Header ----
 #
 # Name:         mapWPS.R
-# Title:        Map all data elements in the eia Weekly Petroleum Status Report
+# Title:        map and get all data in the eia Weekly Petroleum Status Report
 # Version:      1.0
-# Date:         2019-Feb-12
+# Date:         2019MFeb-12
 # Author:       Brad Horn
 # License:      GPL (>=2)
 #
-# Description:  Map all data series IDs for each element in the WPS report. Use the
-#               map to re-create the weekly report using automated API calls to eia.
-#               Downloaded production, storage and price data is then subject to tidy
-#               work handling, table and plot creation.
+# Description:  Map each element in the WPS report to data series IDs. Use the IDs
+#               to get the series data to re-create the WPS report. Downloaded data
+#               includes production, stocks and price data, which is subject to tidy
+#               work flow handling, table and plot creation.
 #
 # Details:      NA
 #
 # Dev.Notes:    NA
 #
 # Depends:      See the configuration script Config_Trading.R in project config folder;
-#               See the custom package eiaAPI for eia API interface functions. An eia
-#               API security key is required to use the functions.
+#               See the custom package eiaAPI for API interface functions. The API
+#               requires a security key, which is a key function input.
 #
 # References:   See https://www.eia.gov/opendata/register.php for API key registration
 #               See https://www.eia.gov/opendata/commands.php for API command syntax
