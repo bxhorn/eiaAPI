@@ -26,7 +26,7 @@
 
 # 0.Configure Workspace ----
 # update path as needed
-source("/home/bxhorn/Dropbox/Trading/R_Projects/NearbyPrices/config/Config_Trading.R")
+source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_Trading.R")
 
 ##----------------------------------------------------------------------------------------##
 
@@ -34,24 +34,24 @@ source("/home/bxhorn/Dropbox/Trading/R_Projects/NearbyPrices/config/Config_Tradi
 # unfold the data hierarchy by layer
 
 # petroleum
-browse.EIA(cat.ID = 714755, key = key)
+browse_eia(cat.ID = 714755, key = key)
 # summary
-browse.EIA(cat.ID = 714756, key = key)
+browse_eia(cat.ID = 714756, key = key)
 # weekly supply estimates
-browse.EIA(cat.ID = 235079, key = key)
+browse_eia(cat.ID = 235079, key = key)
 # by data sereis
-browse.EIA(cat.ID = 235678, key = key)
+browse_eia(cat.ID = 235678, key = key)
 
 # extract stock level data only and get bulk IDs
-stock.ids <- browse.EIA(cat.ID = 235678, key = key) %>%
+stock.ids <- browse_eia(cat.ID = 235678, key = key) %>%
      filter(substr(name, 1, 6) == "Stocks") %>%
      pull(category_id) %>%
-     map_dfr(function(x) browse.EIA(cat.ID = x, key = key))
+     map_dfr(function(x) browse_eia(cat.ID = x, key = key))
 
 # prices
-browse.EIA(cat.ID = 714757, key = key)
+browse_eia(cat.ID = 714757, key = key)
 # spot prices
-browse.EIA(cat.ID = 241335, key = key) %>%
+browse_eia(cat.ID = 241335, key = key) %>%
      filter(f == "D") %>%
      select("series_id")
 ##----------------------------------------------------------------------------------------##
@@ -78,12 +78,33 @@ unfinished.oils <- "PET.WUOSTUS1.W"
 us.total.stocks.spr <- "PET.WTTSTUS1.W"
 us.total.stochs <- "PET.WTESTUS1.W"
 
-series.ID <- c(cl_total, cl_commercial, cl_SPR, rb_total, rb_reformulated,
-              rb_conventional, rb_blending.components, ethanol, kerosene.jetfuel,
-              ho_total, ho_ULSD, ho_15to500ppm, ho_hisulfur, rfo, propane, other.oils,
-              unfinished.oils, us.total.stocks.spr, us.total.stochs)
-series.ID %>%
-     map(function(x) call_eia(x, key = key, cache.data = TRUE, cache.metadata = TRUE))
+series.ID <- c(cl_total, cl_commercial, cl_SPR,
+               rb_total, rb_reformulated, rb_conventional,
+               rb_blending.components, ethanol, kerosene.jetfuel,
+               ho_total, ho_ULSD, ho_15to500ppm,
+               ho_hisulfur, rfo, propane,
+               other.oils, unfinished.oils, us.total.stocks.spr,
+               us.total.stochs)
+
+series.name <- c("cl_total", "cl_commercial", "cl_SPR",
+               "rb_total", "rb_reformulated", "rb_conventional",
+               "rb_blending.components", "ethanol", "kerosene.jetfuel",
+               "ho_total", "ho_ULSD", "ho_15to500ppm",
+               "ho_hisulfur", "rfo", "propane",
+               "other.oils", "unfinished.oils", "us.total.stocks.spr",
+               "us.total.stochs")
+
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          mutate(year = year(Date),
+                 month = month(Date),
+                 week = week(Date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
 
 # US stocks of crude by PAD district (table 4)
 cl_padd1 <- "PET.WCESTP11.W"
@@ -93,6 +114,22 @@ cl_padd3 <- "PET.WCESTP31.W"
 cl_padd4 <- "PET.WCESTP41.W"
 cl_padd5 <- "PET.WCESTP51.W"
 
+series.ID <- c(cl_padd1, cl_padd2, cl_cushing, cl_padd3, cl_padd4, cl_padd5)
+series.name <- c("cl_padd1", "cl_padd2", "cl_cushing", "cl_padd3",
+               "cl_padd4", "cl_padd5")
+
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          mutate(year = year(Date),
+                 month = month(Date),
+                 week = week(Date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
 # US stocks of motor gasoline (table 5)
 rb_padd1 <- "PET.WGTSTP11.W"
 rb_padd2 <- "PET.WGTSTP21.W"
@@ -100,12 +137,43 @@ rb_padd3 <- "PET.WGTSTP31.W"
 rb_padd4 <- "PET.WGTSTP41.W"
 rb_padd5 <- "PET.WGTSTP51.W"
 
+series.ID <- c(rb_padd1, rb_padd2, rb_cushing, rb_padd3, rb_padd4, rb_padd5)
+series.name <- c("rb_padd1", "rb_padd2", "rb_padd3", "rb_padd4", "rb_padd5")
+
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          mutate(year = year(Date),
+                 month = month(Date),
+                 week = week(Date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
+
 # US stocks of distillates (table 6)
 ho_padd1 <- "PET.WDISTP11.W"
 ho_padd2 <- "PET.WDISTP21.W"
-hod_padd3 <- "PET.WDISTP31.W"
+ho_padd3 <- "PET.WDISTP31.W"
 ho_padd4 <- "PET.WDISTP41.W"
 ho_padd5 <- "PET.WDISTP51.W"
+
+series.ID <- c(ho_padd1, ho_padd2, ho_cushing, ho_padd3, ho_padd4, ho_padd5)
+series.name <- c("ho_padd1", "ho_padd2", "ho_padd3", "ho_padd4", "ho_padd5")
+
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          mutate(year = year(Date),
+                 month = month(Date),
+                 week = week(Date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
 
 # US imports of crude oil and products (table 7)
 cl_imports.net <- "PET.WCRNTUS2.W"
@@ -116,10 +184,30 @@ rb_exports <- "PET.W_EPM0F_EEX_NUS-Z00_MBBLD.W"             # finished gasoline
 ho_imports <- "PET.WDIIMUS2.W"
 ho_exports <- "PET.WDIEXUS2.W"
 
+series.ID <- c(cl_imports.net, cl_imports, cl_exports, rb_imports, rb_exports,
+               ho_imports, ho_exports)
+series.name <- c("cl_imports.net", "cl_imports", "cl_exports", "rb_imports",
+                 "rb_exports", "ho_imports", "ho_exports")
+
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          mutate(year = year(Date),
+                 month = month(Date),
+                 week = week(Date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
 # US production metrics (table 9)
 cl_production <- "PET.WCRFPUS2.W"
 refinery.runs <- "PET.WCRRIUS2.W"
 refinery.util <- "PET.WPULEUS3.W"
+
+series.ID <- c(cl_production, refinery.runs, refinery.util)
+series.name <- c("cl_production", "refinery.runs", "refinery.util")
 
 # US spot prices (table 11)
 ho_spot.USG <- "PET.EER_EPD2DXL0_PF4_RGC_DPG.D"
@@ -130,6 +218,21 @@ rb_spot.NYH <- "PET.EER_EPMRU_PF4_Y35NY_DPG.D"
 brent_spot <- "PET.RBRTE.D"
 wti_spot <- "PET.RWTC.D"
 
+series.ID <- c(ho_spot.USG, ho_spot.NYH, no2_spot.NYH, rb_spot.USG, rb_spot.NYH,
+               brent_spot, wti_spot)
+series.name <- c("ho_spot.USG", "ho_spot.NYH", "no2_spot.NYH", "rb_spot.USG",
+                 "rb_spot.NYH", "brent_spot", "wti_spot")
 
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          mutate(year = year(Date),
+                 month = month(Date),
+                 week = week(Date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
 
 # Junk ----
