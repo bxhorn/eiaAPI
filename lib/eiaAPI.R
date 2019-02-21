@@ -69,7 +69,7 @@
 
 
 # Source Code:
-browse.EIA <- function(cat.ID = 371,
+browse_eia <- function(cat.ID = 371,
                        key = NULL) {
 
      # confirm EIA key
