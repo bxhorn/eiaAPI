@@ -76,7 +76,7 @@ propane <- "PET.WPRSTUS1.W"
 other.oils <- "PET.W_EPPO6_SAE_NUS_MBBL.W"
 unfinished.oils <- "PET.WUOSTUS1.W"
 us.total.stocks.spr <- "PET.WTTSTUS1.W"
-us.total.stochs <- "PET.WTESTUS1.W"
+us.total.stocks <- "PET.WTESTUS1.W"
 
 series.ID <- c(cl_total, cl_commercial, cl_SPR,
                rb_total, rb_reformulated, rb_conventional,
@@ -84,14 +84,14 @@ series.ID <- c(cl_total, cl_commercial, cl_SPR,
                ho_total, ho_ULSD, ho_15to500ppm,
                ho_hisulfur, rfo, propane,
                other.oils, unfinished.oils, us.total.stocks.spr,
-               us.total.stochs)
+               us.total.stocks)
 series.name <- c("cl_total", "cl_commercial", "cl_SPR",
                "rb_total", "rb_reformulated", "rb_conventional",
                "rb_blending.components", "ethanol", "kerosene.jetfuel",
                "ho_total", "ho_ULSD", "ho_15to500ppm",
                "ho_hisulfur", "rfo", "propane",
                "other.oils", "unfinished.oils", "us.total.stocks.spr",
-               "us.total.stochs")
+               "us.total.stocks")
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
@@ -244,5 +244,7 @@ map2(series.ID, series.name, function(x, y){
                  week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
+
+
 
 # Junk ----
