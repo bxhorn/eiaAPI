@@ -93,16 +93,16 @@ series.name <- c("cl_total", "cl_commercial", "cl_SPR",
                "ho_hisulfur", "rfo", "propane",
                "other.oils", "unfinished.oils", "us.total.stocks.spr",
                "us.total.stochs")
-
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
 # transform the data and rename
 map2(series.ID, series.name, function(x, y){
      temp.dat <- get(x) %>%
-          mutate(year = year(Date),
-                 month = month(Date),
-                 week = week(Date))
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
 
@@ -113,20 +113,20 @@ cl_cushing <- "PET.W_EPC0_SAX_YCUOK_MBBL.W"
 cl_padd3 <- "PET.WCESTP31.W"
 cl_padd4 <- "PET.WCESTP41.W"
 cl_padd5 <- "PET.WCESTP51.W"
-
+# package eia IDs
 series.ID <- c(cl_padd1, cl_padd2, cl_cushing, cl_padd3, cl_padd4, cl_padd5)
 series.name <- c("cl_padd1", "cl_padd2", "cl_cushing", "cl_padd3",
                "cl_padd4", "cl_padd5")
-
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
 # transform the data and rename
 map2(series.ID, series.name, function(x, y){
      temp.dat <- get(x) %>%
-          mutate(year = year(Date),
-                 month = month(Date),
-                 week = week(Date))
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
 
@@ -136,19 +136,19 @@ rb_padd2 <- "PET.WGTSTP21.W"
 rb_padd3 <- "PET.WGTSTP31.W"
 rb_padd4 <- "PET.WGTSTP41.W"
 rb_padd5 <- "PET.WGTSTP51.W"
-
-series.ID <- c(rb_padd1, rb_padd2, rb_cushing, rb_padd3, rb_padd4, rb_padd5)
+# package eia IDs
+series.ID <- c(rb_padd1, rb_padd2, rb_padd3, rb_padd4, rb_padd5)
 series.name <- c("rb_padd1", "rb_padd2", "rb_padd3", "rb_padd4", "rb_padd5")
-
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
 # transform the data and rename
 map2(series.ID, series.name, function(x, y){
      temp.dat <- get(x) %>%
-          mutate(year = year(Date),
-                 month = month(Date),
-                 week = week(Date))
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
 
@@ -159,19 +159,19 @@ ho_padd2 <- "PET.WDISTP21.W"
 ho_padd3 <- "PET.WDISTP31.W"
 ho_padd4 <- "PET.WDISTP41.W"
 ho_padd5 <- "PET.WDISTP51.W"
-
+# package eia IDs
 series.ID <- c(ho_padd1, ho_padd2, ho_cushing, ho_padd3, ho_padd4, ho_padd5)
 series.name <- c("ho_padd1", "ho_padd2", "ho_padd3", "ho_padd4", "ho_padd5")
-
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
 # transform the data and rename
 map2(series.ID, series.name, function(x, y){
      temp.dat <- get(x) %>%
-          mutate(year = year(Date),
-                 month = month(Date),
-                 week = week(Date))
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
 
@@ -183,21 +183,21 @@ rb_imports <- "PET.WGTIMUS2.W"					     # total motor gasoline
 rb_exports <- "PET.W_EPM0F_EEX_NUS-Z00_MBBLD.W"             # finished gasoline
 ho_imports <- "PET.WDIIMUS2.W"
 ho_exports <- "PET.WDIEXUS2.W"
-
+# package eia IDs
 series.ID <- c(cl_imports.net, cl_imports, cl_exports, rb_imports, rb_exports,
                ho_imports, ho_exports)
 series.name <- c("cl_imports.net", "cl_imports", "cl_exports", "rb_imports",
                  "rb_exports", "ho_imports", "ho_exports")
-
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
 # transform the data and rename
 map2(series.ID, series.name, function(x, y){
      temp.dat <- get(x) %>%
-          mutate(year = year(Date),
-                 month = month(Date),
-                 week = week(Date))
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
 
@@ -205,9 +205,20 @@ map2(series.ID, series.name, function(x, y){
 cl_production <- "PET.WCRFPUS2.W"
 refinery.runs <- "PET.WCRRIUS2.W"
 refinery.util <- "PET.WPULEUS3.W"
-
+# package eia IDs
 series.ID <- c(cl_production, refinery.runs, refinery.util)
 series.name <- c("cl_production", "refinery.runs", "refinery.util")
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,                                  cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
 
 # US spot prices (table 11)
 ho_spot.USG <- "PET.EER_EPD2DXL0_PF4_RGC_DPG.D"
@@ -215,23 +226,23 @@ ho_spot.NYH <- "PET.EER_EPD2DXL0_PF4_Y35NY_DPG.D"
 no2_spot.NYH <- "PET.EER_EPD2F_PF4_Y35NY_DPG.D"
 rb_spot.USG <- "PET.EER_EPMRU_PF4_RGC_DPG.D"
 rb_spot.NYH <- "PET.EER_EPMRU_PF4_Y35NY_DPG.D"
-brent_spot <- "PET.RBRTE.D"
-wti_spot <- "PET.RWTC.D"
-
+cl_brent_spot <- "PET.RBRTE.D"
+cl_wti_spot <- "PET.RWTC.D"
+# package eia IDs
 series.ID <- c(ho_spot.USG, ho_spot.NYH, no2_spot.NYH, rb_spot.USG, rb_spot.NYH,
-               brent_spot, wti_spot)
+               cl_brent_spot, cl_wti_spot)
 series.name <- c("ho_spot.USG", "ho_spot.NYH", "no2_spot.NYH", "rb_spot.USG",
-                 "rb_spot.NYH", "brent_spot", "wti_spot")
-
+                 "rb_spot.NYH", "cl_brent_spot", "cl_wti_spot")
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
 # transform the data and rename
 map2(series.ID, series.name, function(x, y){
      temp.dat <- get(x) %>%
-          mutate(year = year(Date),
-                 month = month(Date),
-                 week = week(Date))
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
 
