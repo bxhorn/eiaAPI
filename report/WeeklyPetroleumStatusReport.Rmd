@@ -1,0 +1,45 @@
+---
+title: "Weekly Petroleum Status Report" 
+author: "Brad Horn"
+date: "29-Jan-2019   Issue:`r format(Sys.time(), '%U')`"
+output:
+  html_document: 
+    theme: cerulean
+    highlight: haddock
+  pdf_document:
+    highlight: haddock
+    keep_tex: yes
+    number_sections: true
+    fig_caption: true
+header-includes:
+- \usepackage{titling}
+- \usepackage{amsmath}
+- \usepackage{amssymb}
+- \usepackage{amsfonts}
+- \usepackage{mathtools}
+- \usepackage{graphicx}
+- \usepackage{placeins}
+- \usepackage{wrapfig}
+- \usepackage{framed}
+- \usepackage[dvipsnames]{xcolor}
+- \usepackage[font={small,it}]{caption}
+- \usepackage[font={small,it}]{subcaption}
+- \usepackage{relsize}
+- \usepackage[hang,bottom]{footmisc}
+- \usepackage{hyperref}
+- \usepackage{pdflscape}
+geometry: top=0.7in, bottom=0.5in, left=0.5in, right=0.7in
+papersize: a4paper
+---
+
+
+```{r setup, include=FALSE}
+# set global options
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Introduction
+Summary tbd.
+
+### 
+
