@@ -8,9 +8,9 @@
 # License:      GPL (>=2)
 #
 # Description:  Map each element in the WPS report to data series IDs. Use the IDs
-#               to get the series data to re-create the WPS report. Downloaded data
-#               includes production, stocks and price data, which is subject to tidy
-#               work flow handling, table and plot creation.
+#               to get the series data from eia.  Data includes production, storage
+#               stocks and spot prices.  Data is transformed for tidy work flow and
+#               the creation of WPS summary tables and plots.
 #
 # Details:      NA
 #
@@ -85,7 +85,6 @@ series.ID <- c(cl_total, cl_commercial, cl_SPR,
                ho_hisulfur, rfo, propane,
                other.oils, unfinished.oils, us.total.stocks.spr,
                us.total.stochs)
-
 series.name <- c("cl_total", "cl_commercial", "cl_SPR",
                "rb_total", "rb_reformulated", "rb_conventional",
                "rb_blending.components", "ethanol", "kerosene.jetfuel",
