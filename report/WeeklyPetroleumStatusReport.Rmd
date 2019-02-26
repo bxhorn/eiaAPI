@@ -1,7 +1,7 @@
 ---
 title: "Weekly Petroleum Status Report" 
 author: "Brad Horn"
-date: "29-Jan-2019   Issue:`r format(Sys.time(), '%U')`"
+date: "29-Jan-2019  Week 7"
 output:
   html_document: 
     theme: cerulean
@@ -38,8 +38,161 @@ papersize: a4paper
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Introduction
-Summary tbd.
+### Summary
+Summary TBD
 
-### 
+### US Petroleum Balance
+*(Million Barrels)*
 
+```{r balances1, eval=TRUE, echo=FALSE, results=FALSE}
+setwd("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/")
+source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_Trading.R")
+
+cl_total <- "PET.WCRSTUS1.W"
+cl_commercial <- "PET.WCESTUS1.W"
+cl_SPR <- "PET.WCSSTUS1.W"
+rb_total <- "PET.WGTSTUS1.W"
+rb_reformulated <- "PET.WGRSTUS1.W"
+rb_conventional <- "PET.WG4ST_NUS_1.W"
+rb_blending.components <- "PET.WBCSTUS1.W"
+ethanol <- "PET.W_EPOOXE_SAE_NUS_MBBL.W"
+kerosene.jetfuel <- "PET.WKJSTUS1.W"
+ho_total <- "PET.WDISTUS1.W"
+ho_ULSD <- "PET.WD0ST_NUS_1.W"
+ho_15to500ppm <- "PET.WD1ST_NUS_1.W"
+ho_hisulfur <- "PET.WDGSTUS1.W"
+rfo <- "PET.WRESTUS1.W"
+propane <- "PET.WPRSTUS1.W"
+other.oils <- "PET.W_EPPO6_SAE_NUS_MBBL.W"
+unfinished.oils <- "PET.WUOSTUS1.W"
+us.total.stocks.spr <- "PET.WTTSTUS1.W"
+us.total.stocks <- "PET.WTESTUS1.W"
+
+series.ID <- c(cl_total, cl_commercial, cl_SPR,
+               rb_total, rb_reformulated, rb_conventional,
+               rb_blending.components, ethanol, kerosene.jetfuel,
+               ho_total, ho_ULSD, ho_15to500ppm,
+               ho_hisulfur, rfo, propane,
+               other.oils, unfinished.oils, us.total.stocks.spr,
+               us.total.stocks)
+series.name <- c("cl_total", "cl_commercial", "cl_SPR",
+               "rb_total", "rb_reformulated", "rb_conventional",
+               "rb_blending.components", "ethanol", "kerosene.jetfuel",
+               "ho_total", "ho_ULSD", "ho_15to500ppm",
+               "ho_hisulfur", "rfo", "propane",
+               "other.oils", "unfinished.oils", "us.total.stocks.spr",
+               "us.total.stocks")
+#get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
+# create status table
+current.week <- pull(tail(cl_total, n = 2)[2, "date"])
+prior.week <- pull(tail(cl_total, n = 2)[1, "date"])
+
+current.other <- pull(tail(ethanol, n = 2)[2, "ethanol"]) +
+     pull(tail(kerosene.jetfuel, n = 2)[2, "kerosene.jetfuel"]) +
+     pull(tail(rfo, n = 2)[2, "rfo"]) +
+     pull(tail(propane, n = 2)[2, "propane"]) +
+     pull(tail(other.oils, n = 2)[2, "other.oils"]) 
+prior.other <- pull(tail(ethanol, n = 2)[1, "ethanol"]) +
+     pull(tail(kerosene.jetfuel, n = 2)[1, "kerosene.jetfuel"]) +
+     pull(tail(rfo, n = 2)[1, "rfo"]) +
+     pull(tail(propane, n = 2)[1, "propane"]) +
+     pull(tail(other.oils, n = 2)[1, "other.oils"]) 
+
+current.stocks = c(pull(tail(cl_commercial, n = 2)[2, "cl_commercial"]),
+                   pull(tail(rb_total, n = 2)[2, "rb_total"]),
+                   pull(tail(ho_total, n = 2)[2, "ho_total"]),
+                   current.other,
+                   pull(tail(cl_SPR, n = 2)[2, "cl_SPR"]),
+                   pull(tail(us.total.stocks.spr, n = 2)[2, "us.total.stocks.spr"]))/1000
+prior.stocks = c(pull(tail(cl_commercial, n = 2)[1, "cl_commercial"]),
+                 pull(tail(rb_total, n = 2)[1, "rb_total"]),
+                 pull(tail(ho_total, n = 2)[1, "ho_total"]),
+                 prior.other,
+                 pull(tail(cl_SPR, n = 2)[1, "cl_SPR"]),
+                 pull(tail(us.total.stocks.spr, n = 2)[1, "us.total.stocks.spr"]))/1000
+
+tbl1 <- tibble(US.Stocks = c("Crude Oil", "Gasoline", "Distillates", "All Other Oils", "SPR", "Total"),
+                current = current.stocks,
+                prior = prior.stocks,
+                change = current.stocks - prior.stocks)
+```
+
+```{r balances2, eval=TRUE, echo=FALSE, results='asis'}
+library(kableExtra)
+kable(tbl1, digits = 1, format.args = list(big.mark = ",")) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/petroleum_balances.png)
+
+   
+### US Crude Oil Supply & Demand
+*(Thousand Barrels Per Day)*
+
+
+```{r cl_supply1, eval=TRUE, echo=FALSE, results=FALSE}
+# US crude oil supply & demand balance (table 1)
+cl_production <- "PET.WCRFPUS2.W"
+refinery.runs <- "PET.WCRRIUS2.W"
+cl_imports <- "PET.WCRIMUS2.W"
+cl_exports <- "PET.WCREXUS2.W"
+
+series.ID <- c(cl_production, refinery.runs, cl_imports, cl_exports)
+series.name <- c("cl_production", "refinery.runs", "cl_imports", "cl_exports")
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
+# create status table (table1)
+current.supply <- c(pull(tail(cl_production, n = 2)[2, "cl_production"]),
+                    pull(tail(cl_imports, n = 2)[2, "cl_imports"]),
+                    -1 * pull(tail(cl_exports, n = 2)[2, "cl_exports"]),
+                    -1 * pull(tbl1[1, "change"])/7, 
+                    pull(tail(refinery.runs, n = 2)[2, "refinery.runs"]))
+
+prior.stock.change <- (pull(tail(cl_commercial, n = 3)[2, "cl_commercial"]) -
+     pull(tail(cl_commercial, n = 3)[1, "cl_commercial"]))/1000
+
+prior.supply <- c(pull(tail(cl_production, n = 2)[1, "cl_production"]),
+                    pull(tail(cl_imports, n = 2)[1, "cl_imports"]),
+                    -1 * pull(tail(cl_exports, n = 2)[1, "cl_exports"]),
+                    -1 * prior.stock.change/7, 
+                    pull(tail(refinery.runs, n = 2)[1, "refinery.runs"]))
+current.adj <- sum(current.supply[1:4]) - current.supply[5]  
+prior.adj <- sum(prior.supply[1:4]) - prior.supply[5]
+
+tbl2 <- tibble(Mass.Balance = c("Production", "Imports", "Exports", "Stock.Change",
+                                "Adjustment", "Refinery.Inputs"),
+               current = c(current.supply[1:4], current.adj, current.supply[5]),
+               prior = c(prior.supply[1:4], prior.adj, prior.supply[5])) %>%
+     mutate(change = current - prior)
+```
+
+```{r cl_supply2, eval=TRUE, echo=FALSE, results='asis'}
+library(kableExtra)
+kable(tbl2, digits = 1, format.args = list(big.mark = ",")) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/cl_balances.png)
