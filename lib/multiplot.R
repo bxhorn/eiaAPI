@@ -12,7 +12,7 @@
 # Description: Funtion script to tile multiple plots into one frame using the grid
 #              package for base R.
 #
-# Details:     The function arguments are:
+# Details:     Function by Winston Chang. The function arguments are:
 #
 #                   ...            ggplot objects to be tiled
 #                   plotlist       a list object with ggplot objects used as an
@@ -31,7 +31,7 @@
 #
 # Depends      R programming language (3.5), grid package
 #
-# References:  N/A
+# References:  http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 ##-------------------------------------------------------------------------------------------##
 
 
