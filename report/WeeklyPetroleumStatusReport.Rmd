@@ -46,7 +46,7 @@ Summary TBD
 
 ```{r balances1, eval=TRUE, echo=FALSE, results=FALSE}
 setwd("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/")
-source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_Trading.R")
+source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_CL.R")
 
 cl_total <- "PET.WCRSTUS1.W"
 cl_commercial <- "PET.WCESTUS1.W"
@@ -196,3 +196,184 @@ kable(tbl2, digits = 1, format.args = list(big.mark = ",")) %>%
 ```
 
 ![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/cl_balances.png)
+
+   
+### US Crude Oil Storage
+*(Thousand Barrels)*
+    
+Does not include stocks in pipeline (see eia category ID 397940 to get monthly time series IDs for pipeline fill)
+
+
+```{r cl_stocks1, eval=TRUE, echo=FALSE, results=FALSE}
+# US stocks of crude by PAD district (table 4) ----
+cl_padd1 <- "PET.WCESTP11.W"
+cl_padd2 <- "PET.WCESTP21.W"
+cl_cushing <- "PET.W_EPC0_SAX_YCUOK_MBBL.W"
+cl_padd3 <- "PET.WCESTP31.W"
+cl_padd4 <- "PET.WCESTP41.W"
+cl_padd5 <- "PET.WCESTP51.W"
+# package eia IDs
+series.ID <- c(cl_padd1, cl_padd2, cl_cushing, cl_padd3, cl_padd4, cl_padd5)
+series.name <- c("cl_padd1", "cl_padd2", "cl_cushing", "cl_padd3",
+               "cl_padd4", "cl_padd5")
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
+# create status table4
+current.cl_stocks <- c(pull(tail(cl_cushing, n = 2)[2, "cl_cushing"]),
+                       pull(tail(cl_padd1, n = 2)[2, "cl_padd1"]),
+                       pull(tail(cl_padd2, n = 2)[2, "cl_padd2"]),
+                       pull(tail(cl_padd3, n = 2)[2, "cl_padd3"]),
+                       pull(tail(cl_padd4, n = 2)[2, "cl_padd4"]),
+                       pull(tail(cl_padd5, n = 2)[2, "cl_padd5"]),
+                       pull(tail(cl_commercial, n = 2)[2, "cl_commercial"]))
+prior.cl_stocks <- c(pull(tail(cl_cushing, n = 2)[1, "cl_cushing"]),
+                     pull(tail(cl_padd1, n = 2)[1, "cl_padd1"]),
+                     pull(tail(cl_padd2, n = 2)[1, "cl_padd2"]),
+                     pull(tail(cl_padd3, n = 2)[1, "cl_padd3"]),
+                     pull(tail(cl_padd4, n = 2)[1, "cl_padd4"]),
+                     pull(tail(cl_padd5, n = 2)[1, "cl_padd5"]),
+                     pull(tail(cl_commercial, n = 2)[1, "cl_commercial"]))
+tbl4 <- tibble(Crude.Stocks = c("Cushing", "PADD1", "PADD2", "PADD3",
+                                "PADD4", "PADD5", "Total"),
+               current = current.cl_stocks,
+               prior = prior.cl_stocks) %>%
+     mutate(change = current - prior)
+```
+
+```{r cl_stocks2, eval=TRUE, echo=FALSE, results='asis'}
+library(kableExtra)
+kable(tbl4, digits = 1, format.args = list(big.mark = ",")) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/cl_cushing.png)
+![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/cl_stocks.png)
+
+   
+### US Gasoline Storage
+*(Thousand Barrels)*
+    
+Does not include stocks in pipeline (see eia category ID 397940 to get monthly time series IDs for pipeline fill)
+
+
+```{r rb_stocks1, eval=TRUE, echo=FALSE, results=FALSE}
+# US Stocks of Motor Gasoline by PADD (table 5) ----
+rb_padd1 <- "PET.WGTSTP11.W"
+rb_padd2 <- "PET.WGTSTP21.W"
+rb_padd3 <- "PET.WGTSTP31.W"
+rb_padd4 <- "PET.WGTSTP41.W"
+rb_padd5 <- "PET.WGTSTP51.W"
+# package eia IDs
+series.ID <- c(rb_padd1, rb_padd2, rb_padd3, rb_padd4, rb_padd5)
+series.name <- c("rb_padd1", "rb_padd2", "rb_padd3", "rb_padd4", "rb_padd5")
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
+# create status table5
+current.rb_stocks <- c(pull(tail(rb_padd1, n = 2)[2, "rb_padd1"]),
+                       pull(tail(rb_padd2, n = 2)[2, "rb_padd2"]),
+                       pull(tail(rb_padd3, n = 2)[2, "rb_padd3"]),
+                       pull(tail(rb_padd4, n = 2)[2, "rb_padd4"]),
+                       pull(tail(rb_padd5, n = 2)[2, "rb_padd5"]),
+                       pull(tail(rb_total, n = 2)[2, "rb_total"]))
+prior.rb_stocks <- c(pull(tail(rb_padd1, n = 2)[1, "rb_padd1"]),
+                     pull(tail(rb_padd2, n = 2)[1, "rb_padd2"]),
+                     pull(tail(rb_padd3, n = 2)[1, "rb_padd3"]),
+                     pull(tail(rb_padd4, n = 2)[1, "rb_padd4"]),
+                     pull(tail(rb_padd5, n = 2)[1, "rb_padd5"]),
+                     pull(tail(rb_total, n = 2)[1, "rb_total"]))
+tbl5 <- tibble(Crude.Stocks = c("PADD1", "PADD2", "PADD3",
+                                "PADD4", "PADD5", "Total"),
+               current = current.rb_stocks,
+               prior = prior.rb_stocks) %>%
+     mutate(change = current - prior)
+```
+
+```{r rb_stocks2, eval=TRUE, echo=FALSE, results='asis'}
+library(kableExtra)
+kable(tbl5, digits = 1, format.args = list(big.mark = ",")) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/rb_stocks.png)
+
+   
+### US Distillate Storage
+*(Thousand Barrels)*
+    
+Does not include stocks in pipeline (see eia category ID 397940 to get monthly time series IDs for pipeline fill)
+
+
+```{r ho_stocks1, eval=TRUE, echo=FALSE, results=FALSE}
+# US Stocks of Distillates (table 6) ----
+ho_padd1 <- "PET.WDISTP11.W"
+ho_padd2 <- "PET.WDISTP21.W"
+ho_padd3 <- "PET.WDISTP31.W"
+ho_padd4 <- "PET.WDISTP41.W"
+ho_padd5 <- "PET.WDISTP51.W"
+# package eia IDs
+series.ID <- c(ho_padd1, ho_padd2, ho_padd3, ho_padd4, ho_padd5)
+series.name <- c("ho_padd1", "ho_padd2", "ho_padd3", "ho_padd4", "ho_padd5")
+# get the data from eia and send to cache
+map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
+                                    cache.metadata = TRUE, cache.path = cache.path))
+# transform the data and rename
+map2(series.ID, series.name, function(x, y){
+     temp.dat <- get(x) %>%
+          set_colnames(c("date", y)) %>%
+          mutate(year = year(date),
+                 month = month(date),
+                 week = week(date))
+     assign(y, temp.dat, envir = .GlobalEnv)
+})
+
+
+# create status table5
+current.ho_stocks <- c(pull(tail(ho_padd1, n = 2)[2, "ho_padd1"]),
+                       pull(tail(ho_padd2, n = 2)[2, "ho_padd2"]),
+                       pull(tail(ho_padd3, n = 2)[2, "ho_padd3"]),
+                       pull(tail(ho_padd4, n = 2)[2, "ho_padd4"]),
+                       pull(tail(ho_padd5, n = 2)[2, "ho_padd5"]),
+                       pull(tail(ho_total, n = 2)[2, "ho_total"]))
+prior.ho_stocks <- c(pull(tail(ho_padd1, n = 2)[1, "ho_padd1"]),
+                     pull(tail(ho_padd2, n = 2)[1, "ho_padd2"]),
+                     pull(tail(ho_padd3, n = 2)[1, "ho_padd3"]),
+                     pull(tail(ho_padd4, n = 2)[1, "ho_padd4"]),
+                     pull(tail(ho_padd5, n = 2)[1, "ho_padd5"]),
+                     pull(tail(ho_total, n = 2)[1, "ho_total"]))
+tbl6 <- tibble(Distillate.Stocks = c("PADD1", "PADD2", "PADD3",
+                                "PADD4", "PADD5", "Total"),
+               current = current.ho_stocks,
+               prior = prior.ho_stocks) %>%
+     mutate(change = current - prior)
+
+```
+
+```{r ho_stocks2, eval=TRUE, echo=FALSE, results='asis'}
+library(kableExtra)
+kable(tbl6, digits = 1, format.args = list(big.mark = ",")) %>%
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/ho_stocks.png)
