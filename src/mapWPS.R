@@ -32,31 +32,30 @@ source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_CL.R")
 ##----------------------------------------------------------------------------------------##
 
 # 1.Browse API (Category Query) ----
-# unfold the data hierarchy by layer
+# manually unfold the eia data hierarchy by layer
 
 # petroleum
-browse_eia(cat.ID = 714755, key = key)
+# browse_eia(cat.ID = 714755, key = key)
 # summary
-browse_eia(cat.ID = 714756, key = key)
+# browse_eia(cat.ID = 714756, key = key)
 
 # weekly supply estimates
-browse_eia(cat.ID = 235079, key = key)
-# by data sereis
-browse_eia(cat.ID = 235678, key = key)
-
+# browse_eia(cat.ID = 235079, key = key)
+# by data series
+# browse_eia(cat.ID = 235678, key = key)
 # extract stock level data only and get bulk IDs
-stock.ids <- browse_eia(cat.ID = 235678, key = key) %>%
-     filter(substr(name, 1, 6) == "Stocks") %>%
-     pull(category_id) %>%
-     map_dfr(function(x) browse_eia(cat.ID = x, key = key))
+# stock.ids <- browse_eia(cat.ID = 235678, key = key) %>%
+#      filter(substr(name, 1, 6) == "Stocks") %>%
+#      pull(category_id) %>%
+#      map_dfr(function(x) browse_eia(cat.ID = x, key = key))
 
 # prices
-browse_eia(cat.ID = 714757, key = key)
+# browse_eia(cat.ID = 714757, key = key)
 # spot prices
-browse_eia(cat.ID = 241335, key = key) %>%
-     filter(f == "D") %>%
-     select("series_id")
-##----------------------------------------------------------------------------------------##
+# browse_eia(cat.ID = 241335, key = key) %>%
+#      filter(f == "D") %>%
+#      select("updated")
+##---------------------------------------------------------------------------------------##
 
 # 2. Call API (Series Query) ----
 # US Petroleum Balance Sheet (table 1) ----
@@ -137,10 +136,19 @@ prior.stocks <- c(pull(tail(cl_commercial, n = 2)[1, "cl_commercial"]),
                  pull(tail(cl_SPR, n = 2)[1, "cl_SPR"]),
                  pull(tail(us.total.stocks.spr, n = 2)[1, "us.total.stocks.spr"]))/1000
 
-tabl1 <- tibble(US.Stocks = c("Crude Oil", "Gasoline", "Distillates", "All Other Oils", "SPR", "Total"),
+tbl1 <- tibble(US.Stocks = c("Crude Oil", "Gasoline", "Distillates", "All Other Oils", "SPR", "Total"),
                 current = current.stocks,
                 prior = prior.stocks,
                 change = current.stocks - prior.stocks)
+
+# distribution analysis of key changes
+total_delta <- us.total.stocks.spr %>%
+     filter(year >= 1990) %>%
+     mutate(delta = us.total.stocks.spr - Lag(us.total.stocks.spr, k = 1))
+cl_delta <- cl_commercial %>%
+     filter(year >= 1990) %>%
+     mutate(delta = cl_commercial - Lag(cl_commercial, k = 1))
+##---------------------------------------------------------------------------------------##
 
 # US Crude Oil Supply & Demand Balance (table 1b) ----
 cl_production <- "PET.WCRFPUS2.W"
@@ -167,16 +175,16 @@ map2(series.ID, series.name, function(x, y){
 current.supply <- c(pull(tail(cl_production, n = 2)[2, "cl_production"]),
                     pull(tail(cl_imports, n = 2)[2, "cl_imports"]),
                     -1 * pull(tail(cl_exports, n = 2)[2, "cl_exports"]),
-                    -1 * pull(tbl1[1, "change"])/7,
+                    -1 * pull(tbl1[1, "change"] * 1000)/7,
                     pull(tail(refinery.runs, n = 2)[2, "refinery.runs"]))
 
 prior.stock.change <- (pull(tail(cl_commercial, n = 3)[2, "cl_commercial"]) -
-     pull(tail(cl_commercial, n = 3)[1, "cl_commercial"]))/1000
+     pull(tail(cl_commercial, n = 3)[1, "cl_commercial"]))
 
 prior.supply <- c(pull(tail(cl_production, n = 2)[1, "cl_production"]),
                     pull(tail(cl_imports, n = 2)[1, "cl_imports"]),
                     -1 * pull(tail(cl_exports, n = 2)[1, "cl_exports"]),
-                    -1 * prior.stock.change/7,
+                    -1 * prior.stock.change /7,
                     pull(tail(refinery.runs, n = 2)[1, "refinery.runs"]))
 current.adj <- sum(current.supply[1:4]) - current.supply[5]
 prior.adj <- sum(prior.supply[1:4]) - prior.supply[5]
@@ -186,8 +194,7 @@ tbl2 <- tibble(Mass.Balance = c("Production", "Imports", "Exports", "Stock.Chang
                current = c(current.supply[1:4], current.adj, current.supply[5]),
                prior = c(prior.supply[1:4], prior.adj, prior.supply[5])) %>%
      mutate(change = current - prior)
-
-
+##---------------------------------------------------------------------------------------##
 
 # US Stocks of Crude Oil by PADD (table 4) ----
 cl_padd1 <- "PET.WCESTP11.W"
@@ -233,16 +240,18 @@ tbl4 <- tibble(Crude.Stocks = c("Cushing", "PADD1", "PADD2", "PADD3",
                current = current.cl_stocks,
                prior = prior.cl_stocks) %>%
      mutate(change = current - prior)
+##---------------------------------------------------------------------------------------##
 
 # US Stocks of Motor Gasoline by PADD (table 5) ----
 rb_padd1 <- "PET.WGTSTP11.W"
+rb_padd1b <- "PET.WGTST1B1.W"
 rb_padd2 <- "PET.WGTSTP21.W"
 rb_padd3 <- "PET.WGTSTP31.W"
 rb_padd4 <- "PET.WGTSTP41.W"
 rb_padd5 <- "PET.WGTSTP51.W"
 # package eia IDs
-series.ID <- c(rb_padd1, rb_padd2, rb_padd3, rb_padd4, rb_padd5)
-series.name <- c("rb_padd1", "rb_padd2", "rb_padd3", "rb_padd4", "rb_padd5")
+series.ID <- c(rb_padd1, rb_padd1b, rb_padd2, rb_padd3, rb_padd4, rb_padd5)
+series.name <- c("rb_padd1", "rb_padd1b", "rb_padd2", "rb_padd3", "rb_padd4", "rb_padd5")
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
@@ -258,33 +267,36 @@ map2(series.ID, series.name, function(x, y){
 
 # create status table5
 current.rb_stocks <- c(pull(tail(rb_padd1, n = 2)[2, "rb_padd1"]),
+                       pull(tail(rb_padd1b, n = 2)[2, "rb_padd1b"]),
                        pull(tail(rb_padd2, n = 2)[2, "rb_padd2"]),
                        pull(tail(rb_padd3, n = 2)[2, "rb_padd3"]),
                        pull(tail(rb_padd4, n = 2)[2, "rb_padd4"]),
                        pull(tail(rb_padd5, n = 2)[2, "rb_padd5"]),
-                       pull(tail(rb_total, n = 2)[2, "rb_total"]),)
+                       pull(tail(rb_total, n = 2)[2, "rb_total"]))
 prior.rb_stocks <- c(pull(tail(rb_padd1, n = 2)[1, "rb_padd1"]),
+                     pull(tail(rb_padd1b, n = 2)[1, "rb_padd1b"]),
                      pull(tail(rb_padd2, n = 2)[1, "rb_padd2"]),
                      pull(tail(rb_padd3, n = 2)[1, "rb_padd3"]),
                      pull(tail(rb_padd4, n = 2)[1, "rb_padd4"]),
                      pull(tail(rb_padd5, n = 2)[1, "rb_padd5"]),
-                     pull(tail(rb_total, n = 2)[1, "rb_total"]),)
-tbl5 <- tibble(Crude.Stocks = c("PADD1", "PADD2", "PADD3",
+                     pull(tail(rb_total, n = 2)[1, "rb_total"]))
+tbl5 <- tibble(Gasoline.Stocks = c("PADD1", "PADD1b", "PADD2", "PADD3",
                                 "PADD4", "PADD5", "Total"),
                current = current.rb_stocks,
                prior = prior.rb_stocks) %>%
      mutate(change = current - prior)
+##---------------------------------------------------------------------------------------##
 
-
-# US Stocks of Distillates (table 6) ----
+# US Stocks of Distillates (table 6) -----
 ho_padd1 <- "PET.WDISTP11.W"
+ho_padd1b <- "PET.WDIST1B1.W"
 ho_padd2 <- "PET.WDISTP21.W"
 ho_padd3 <- "PET.WDISTP31.W"
 ho_padd4 <- "PET.WDISTP41.W"
 ho_padd5 <- "PET.WDISTP51.W"
 # package eia IDs
-series.ID <- c(ho_padd1, ho_padd2, ho_cushing, ho_padd3, ho_padd4, ho_padd5)
-series.name <- c("ho_padd1", "ho_padd2", "ho_padd3", "ho_padd4", "ho_padd5")
+series.ID <- c(ho_padd1, ho_padd1b, ho_padd2, ho_padd3, ho_padd4, ho_padd5)
+series.name <- c("ho_padd1", "ho_padd1b", "ho_padd2", "ho_padd3", "ho_padd4", "ho_padd5")
 # get the data from eia and send to cache
 map(series.ID, function(x) call_eia(x, key = key, cache.data = TRUE,
                                     cache.metadata = TRUE, cache.path = cache.path))
@@ -301,26 +313,27 @@ map2(series.ID, series.name, function(x, y){
 
 # create status table5
 current.ho_stocks <- c(pull(tail(ho_padd1, n = 2)[2, "ho_padd1"]),
+                       pull(tail(ho_padd1b, n = 2)[2, "ho_padd1b"]),
                        pull(tail(ho_padd2, n = 2)[2, "ho_padd2"]),
                        pull(tail(ho_padd3, n = 2)[2, "ho_padd3"]),
                        pull(tail(ho_padd4, n = 2)[2, "ho_padd4"]),
                        pull(tail(ho_padd5, n = 2)[2, "ho_padd5"]),
                        pull(tail(ho_total, n = 2)[2, "ho_total"]))
 prior.ho_stocks <- c(pull(tail(ho_padd1, n = 2)[1, "ho_padd1"]),
+                     pull(tail(ho_padd1b, n = 2)[1, "ho_padd1b"]),
                      pull(tail(ho_padd2, n = 2)[1, "ho_padd2"]),
                      pull(tail(ho_padd3, n = 2)[1, "ho_padd3"]),
                      pull(tail(ho_padd4, n = 2)[1, "ho_padd4"]),
                      pull(tail(ho_padd5, n = 2)[1, "ho_padd5"]),
                      pull(tail(ho_total, n = 2)[1, "ho_total"]))
-tbl6 <- tibble(Distillate.Stocks = c("PADD1", "PADD2", "PADD3",
+tbl6 <- tibble(Distillate.Stocks = c("PADD1", "PADD1b", "PADD2", "PADD3",
                                 "PADD4", "PADD5", "Total"),
                current = current.ho_stocks,
                prior = prior.ho_stocks) %>%
      mutate(change = current - prior)
+##---------------------------------------------------------------------------------------##
 
-
-
-# US imports of crude oil and products (table 7)
+# US imports of crude oil and products (table 7) -----
 cl_imports.net <- "PET.WCRNTUS2.W"
 cl_imports <- "PET.WCRIMUS2.W"
 cl_exports <- "PET.WCREXUS2.W"
@@ -345,8 +358,9 @@ map2(series.ID, series.name, function(x, y){
                  week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
+##---------------------------------------------------------------------------------------##
 
-# US production metrics (table 9)
+# US production metrics (table 9) -----
 cl_production <- "PET.WCRFPUS2.W"
 refinery.runs <- "PET.WCRRIUS2.W"
 refinery.util <- "PET.WPULEUS3.W"
@@ -390,6 +404,4 @@ map2(series.ID, series.name, function(x, y){
                  week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
-
-
-
+##---------------------------------------------------------------------------------------##

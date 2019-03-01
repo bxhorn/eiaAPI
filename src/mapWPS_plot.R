@@ -27,9 +27,10 @@
 
 # 0.Configure Workspace ----
 # update path as needed
-source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_CL.R")
+source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/src/mapWPS.R")
 
 # 1.US balances ----
+# change in reported stocks
 temp.var <- us.total.stocks
 temp.dat <- temp.var %>%
      filter(year >= 2014)
@@ -174,6 +175,52 @@ home <- getwd()
 setwd(image.path)
 png(file = "petroleum_balances.png", width = 950, height = 900)
 multiplot(p1, p2, p3, p4, layout = matrix(c(1,2,3,4), nrow = 2, byrow = TRUE))
+dev.off()
+setwd(home)
+
+# distribution analysis of key changes
+total_delta <- us.total.stocks.spr %>%
+     filter(year >= 1990) %>%
+     mutate(delta = us.total.stocks.spr - Lag(us.total.stocks.spr, k = 1))
+cl_delta <- cl_commercial %>%
+     filter(year >= 1990) %>%
+     mutate(delta = cl_commercial - Lag(cl_commercial, k = 1))
+
+total.delta.point <- tail(total_delta, n = 1)$delta / 1e3
+cl.delta.point <- tail(cl_delta, n = 1)$delta / 1e3
+
+delta1 <- ggplot(total_delta, aes(x = delta / 1e3)) +
+     geom_histogram(bins = 50, color = "green", fill = "black", alpha = 0.50) +
+     geom_vline(aes(xintercept = mean(delta / 1e3, na.rm = TRUE)),
+                linetype = "dashed", size = 0.6, color = "black") +
+     geom_vline(aes(xintercept = total.delta.point),
+                linetype = "dashed", size = 1, color = "red") +
+     labs(title = "Change in Total Stocks",
+          subtitle = temp.subtitle,
+          caption = "Data from eia using OpenDat API",
+          x = "Million Barrels (Bbls)",
+          y = "Frequency since 1990") +
+     theme.Dat +
+     theme(axis.text.x = element_text(size = 12, color = "grey15", angle = 0, vjust = 0.5))
+
+delta2 <- ggplot(cl_delta, aes(x = delta / 1e3)) +
+     geom_histogram(bins = 50, color = "green", fill = "black", alpha = 0.50) +
+     geom_vline(aes(xintercept = mean(delta / 1e3, na.rm = TRUE)),
+                linetype = "dashed", size = 0.6, color = "black") +
+     geom_vline(aes(xintercept = cl.delta.point),
+                linetype = "dashed", size = 1, color = "red") +
+     labs(title = "Change in Commercial Crude Stocks",
+          subtitle = temp.subtitle,
+          caption = "Data from eia using OpenDat API",
+          x = "Million Barrels (Bbls)",
+          y = "Frequency since 1990") +
+     theme.Dat +
+     theme(axis.text.x = element_text(size = 12, color = "grey15", angle = 0, vjust = 0.5))
+
+home <- getwd()
+setwd(image.path)
+png(file = "stock_changes.png", width = 950, height = 425)
+multiplot(delta1, delta2, layout = matrix(c(1,2), nrow = 1, byrow = TRUE))
 dev.off()
 setwd(home)
 
@@ -329,6 +376,33 @@ dev.off()
 setwd(home)
 
 # 3.US Crude Oil Storage ----
+temp.max <- ceiling(max(tbl4$change) / 1e3) * 1e3
+temp.min <- floor(min(tbl4$change) / 1e3) * 1e3
+temp.step <- (temp.max - temp.min) / 10
+
+home <- getwd()
+setwd(image.path)
+png(file = "cl_stockchange.png", width = 950, height = 425)
+ggplot(tbl4, aes(x = Crude.Stocks, y = change)) +
+     geom_bar(stat = "identity", fill = "black", color = "black", size = 1.25,
+              alpha = 0.4) +
+     geom_hline(aes(yintercept = 0), linetype = "solid", size = 1, color = "red") +
+     scale_y_continuous(labels = comma,
+                        limits = c(temp.min, temp.max),
+                        breaks = seq(temp.min, temp.max, by = temp.step)) +
+     labs(title = paste0("Crude Oil Stocks: W-o-W Changes"),
+          subtitle = temp.subtitle,
+          caption = "Data from eia using OpenDat API",
+          x = "",
+          y = "Thousand barrels (000 Bbls)") +
+     theme.Dat +
+     theme(legend.title = element_blank(),
+           axis.text.x = element_text(size = 12, color = "grey15", face = "bold",
+                                      angle = 0, vjust = 0.5))
+dev.off()
+setwd(home)
+
+
 temp.var <- cl_cushing
 temp.dat <- temp.var %>%
      filter(year >= 2014)
@@ -544,6 +618,64 @@ dev.off()
 setwd(home)
 
 # 4.US Gasoline Storage ----
+temp.max <- ceiling(max(tbl5$change) / 1e3) * 1e3
+temp.min <- floor(min(tbl5$change) / 1e3) * 1e3
+temp.step <- (temp.max - temp.min) / 10
+home <- getwd()
+setwd(image.path)
+png(file = "rb_stockchange.png", width = 950, height = 425)
+ggplot(tbl5, aes(x = Gasoline.Stocks, y = change)) +
+     geom_bar(stat = "identity", fill = "black", color = "black", size = 1.25,
+              alpha = 0.4) +
+     geom_hline(aes(yintercept = 0), linetype = "solid", size = 1, color = "red") +
+     scale_y_continuous(labels = comma,
+                        limits = c(temp.min, temp.max),
+                        breaks = seq(temp.min, temp.max, by = temp.step)) +
+     labs(title = paste0("Gasoline Stocks: W-o-W Changes"),
+          subtitle = temp.subtitle,
+          caption = "Data from eia using OpenDat API",
+          x = "",
+          y = "Thousand barrels (000 Bbls)") +
+     theme.Dat +
+     theme(legend.title = element_blank(),
+           axis.text.x = element_text(size = 12, color = "grey15", face = "bold",
+                                      angle = 0, vjust = 0.5))
+dev.off()
+setwd(home)
+
+
+temp.var <- rb_padd1b
+temp.dat <- temp.var %>%
+     filter(year >= 2014)
+temp.dat.19 <- temp.var %>%
+     filter(year == 2019)
+temp.max <- ceiling(max(temp.dat[, 2]) / 1e3) * 1e3
+temp.min <- floor(min(temp.dat[, 2]) / 1e3) * 1e3
+temp.step <- (temp.max - temp.min) / 10
+
+home <- getwd()
+setwd(image.path)
+png(file = "rb_padd1b.png", width = 950, height = 425)
+ggplot(temp.dat, aes(x = week, y = rb_padd1b, group = year, color = as.factor(year))) +
+     geom_line() +
+     geom_point(aes(shape = as.factor(year)), size = 1.5) +
+     geom_point(data = temp.dat.19, aes(x = week, y = rb_padd1b), color = "black", size = 2.0) +
+     scale_y_continuous(labels = comma,
+                        limits = c(temp.min, temp.max),
+                        breaks = seq(temp.min, temp.max, by = temp.step)) +
+     scale_x_continuous(breaks = seq(0, 52, 4)) +
+     scale_color_manual(values = temp.color) +
+     scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
+     labs(title = paste0("Gasoline Stocks: PADD1b New York Harbor"),
+          subtitle = temp.subtitle,
+          caption = "Data from eia using OpenDat API",
+          x = "Production Week",
+          y = "Thousand barrels (000 Bbls)") +
+     theme.Dat +
+     theme(legend.title = element_blank())
+dev.off()
+setwd(home)
+
 temp.var <- rb_total
 temp.dat <- temp.var %>%
      filter(year >= 2014)
@@ -762,6 +894,65 @@ dev.off()
 setwd(home)
 
 # 5.US Distillate Storage ----
+temp.max <- ceiling(max(tbl6$change) / 1e3) * 1e3
+temp.min <- floor(min(tbl6$change) / 1e3) * 1e3
+temp.step <- (temp.max - temp.min) / 10
+home <- getwd()
+setwd(image.path)
+png(file = "ho_stockchange.png", width = 950, height = 425)
+ggplot(tbl6, aes(x = Distillate.Stocks, y = change)) +
+     geom_bar(stat = "identity", fill = "black", color = "black", size = 1.25,
+              alpha = 0.4) +
+     geom_hline(aes(yintercept = 0), linetype = "solid", size = 1, color = "red") +
+     scale_y_continuous(labels = comma,
+                        limits = c(temp.min, temp.max),
+                        breaks = seq(temp.min, temp.max, by = temp.step)) +
+     labs(title = paste0("Distillate Stocks: W-o-W Changes"),
+          subtitle = temp.subtitle,
+          caption = "Data from eia using OpenDat API",
+          x = "",
+          y = "Thousand barrels (000 Bbls)") +
+     theme.Dat +
+     theme(legend.title = element_blank(),
+           axis.text.x = element_text(size = 12, color = "grey15", face = "bold",
+                                      angle = 0, vjust = 0.5))
+dev.off()
+setwd(home)
+
+
+temp.var <- ho_padd1b
+temp.dat <- temp.var %>%
+     filter(year >= 2014)
+temp.dat.19 <- temp.var %>%
+     filter(year == 2019)
+temp.max <- ceiling(max(temp.dat[, 2]) / 1e3) * 1e3
+temp.min <- floor(min(temp.dat[, 2]) / 1e3) * 1e3
+temp.step <- (temp.max - temp.min) / 10
+
+home <- getwd()
+setwd(image.path)
+png(file = "ho_padd1b.png", width = 950, height = 425)
+ggplot(temp.dat, aes(x = week, y = ho_padd1b, group = year, color = as.factor(year))) +
+     geom_line() +
+     geom_point(aes(shape = as.factor(year)), size = 1.5) +
+     geom_point(data = temp.dat.19, aes(x = week, y = ho_padd1b), color = "black", size = 2.0) +
+     scale_y_continuous(labels = comma,
+                        limits = c(temp.min, temp.max),
+                        breaks = seq(temp.min, temp.max, by = temp.step)) +
+     scale_x_continuous(breaks = seq(0, 52, 4)) +
+     scale_color_manual(values = temp.color) +
+     scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
+     labs(title = paste0("Distillate Stocks: PADD1b New York Harbor"),
+          subtitle = temp.subtitle,
+          caption = "Data from eia using OpenDat API",
+          x = "Production Week",
+          y = "Thousand barrels (000 Bbls)") +
+     theme.Dat +
+     theme(legend.title = element_blank())
+dev.off()
+setwd(home)
+
+
 temp.var <- ho_total
 temp.dat <- temp.var %>%
      filter(year >= 2014)
