@@ -27,7 +27,7 @@
 
 # 0.Configure Workspace ----
 # update path as needed
-source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_CL.R")
+# source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_CL.R")
 
 ##----------------------------------------------------------------------------------------##
 
@@ -378,8 +378,9 @@ map2(series.ID, series.name, function(x, y){
                  week = week(date))
      assign(y, temp.dat, envir = .GlobalEnv)
 })
+##---------------------------------------------------------------------------------------##
 
-# US spot prices (table 11)
+# US spot prices (table 11) ----
 ho_spot.USG <- "PET.EER_EPD2DXL0_PF4_RGC_DPG.D"
 ho_spot.NYH <- "PET.EER_EPD2DXL0_PF4_Y35NY_DPG.D"
 no2_spot.NYH <- "PET.EER_EPD2F_PF4_Y35NY_DPG.D"
@@ -405,3 +406,4 @@ map2(series.ID, series.name, function(x, y){
      assign(y, temp.dat, envir = .GlobalEnv)
 })
 ##---------------------------------------------------------------------------------------##
+

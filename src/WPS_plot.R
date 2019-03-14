@@ -7,27 +7,33 @@
 # Author:       Brad Horn
 # License:      GPL (>=2)
 #
-# Description:  Map each element in the WPS report to data series IDs. Use the IDs
-#               to get the series data from eia.  Data includes production, storage
-#               stocks and spot prices.  Data is transformed for tidy work flow and
-#               the creation of WPS summary plots.
+# Description:  Batch process the call to eia for the Weekly Petroleum Status Report
+#               Get data and create plots for the WeeklyPetroleumStatusReport.Rmd.
 #
 # Details:      NA
 #
 # Dev.Notes:    NA
 #
 # Depends:      See the configuration script Config_CL.R in project config folder;
-#               See source file eiaWPS.R for core data inputs and tables.
-#               See the custom functions eiaAPI for API interface functions. API use
-#               requires a security key, which is a key function input.
+#               See source file mapWPS.R for core data inputs and tables.
+#               See the custom functions eiaAPI for API interface functions.
+#               API use requires a security key obtained through eia registration.
 #
 # References:   See https://www.eia.gov/opendata/register.php for API key registration
 #               See https://www.eia.gov/opendata/commands.php for API command syntax
 ##----------------------------------------------------------------------------------------##
 
 # 0.Configure Workspace ----
-# update path as needed
-source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/src/mapWPS.R")
+source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/config/Config_CL.R")
+
+# confirm latest data available
+# call_eia("PET.WTESTUS1.W", key = key)
+# test <- get("PET.WTESTUS1.W") %>%
+#      tail(., n = 1) %>%
+#      select(Date) %>%
+#      mutate(Week = week(Date))
+# test
+##----------------------------------------------------------------------------------------##
 
 # 1.US balances ----
 # change in reported stocks
