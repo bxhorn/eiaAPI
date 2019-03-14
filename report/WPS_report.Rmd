@@ -1,7 +1,7 @@
 ---
 title: "Weekly Petroleum Status Report" 
 author: "Brad Horn"
-date: "27-Feb-2019  Week 8"
+date: "08-Mar-2019  Week 10"
 output:
   html_document: 
     theme: cerulean
@@ -195,8 +195,8 @@ prior.supply <- c(pull(tail(cl_production, n = 2)[1, "cl_production"]),
                     -1 * pull(tail(cl_exports, n = 2)[1, "cl_exports"]),
                     -1 * prior.stock.change/7, 
                     pull(tail(refinery.runs, n = 2)[1, "refinery.runs"]))
-current.adj <- sum(current.supply[1:4]) - current.supply[5]  
-prior.adj <- sum(prior.supply[1:4]) - prior.supply[5]
+current.adj <- current.supply[5] - sum(current.supply[1:4]) 
+prior.adj <- prior.supply[5] - sum(prior.supply[1:4])
 
 tbl2 <- tibble(Mass.Balance = c("Production", "Imports", "Exports", "Stock.Change",
                                 "Adjustment", "Refinery.Inputs"),
@@ -210,6 +210,9 @@ library(kableExtra)
 kable(tbl2, digits = 1, format.args = list(big.mark = ",")) %>%
       kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
+Note on stock changes: Storage withdrawls are shown in this table only as positive supply for the market like production; storage injections are shown as negative supply like exports. This is proper for mass balance reporting.
+    
+Note on adjustment: The adjustment term is the amount of supply required to balance the market.  It is assumed that this quantity correlates strongly with pipeline line pack.  A positive adjustment represents new supply for the market (less line pack) and a negative adjustment represents less supply for the market (more line pack). 
 
 ![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/cl_balances.png)
 
