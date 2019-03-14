@@ -54,11 +54,11 @@ key <- "702dd5c99ca504ffa0c10e479e34f234"
 
 # Examples:
 # single series download
+series.ID <- "PET.W_EPC0_FPF_SAK_MBBLD.W"
 call_eia(series.ID, key, TRUE, TRUE, cache.path = cache.path)
 # multiple series download
-series.ID <- "PET.W_EPC0_FPF_SAK_MBBLD.W"
 series.ID <- c("PET.W_EPC0_FPF_SAK_MBBLD.W", "ELEC.CONS_TOT_BTU.NG-AK-96.A")
-
+call_eia(series.ID, key, TRUE, TRUE, cache.path = cache.path)
 
 # Source Code
 call_eia <- function(series.ID = NULL,
