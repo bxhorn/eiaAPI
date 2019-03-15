@@ -39,21 +39,28 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ### Summary
+
+**Stock Changes**
+     
+Total commercial petroleum inventories decreased in the last week by 10.2 MMbls.  Once again, we are seeing changes significantly larger than the mean, consistent with the large US production profile. The change was dominated by seasonal declines in gasoline (4.6MMbbls), followed by crude oil (3.9 MMbbls) and other oils (2.1 MMbbls). Distillate stocks increased a modest 0.4 MMbbls.
+    
 **Crude Oil**
      
-U.S. crude oil production averaged 12.1 million barrels per day.
+U.S. crude oil production averaged 12.0 MMbpd, down from 12.1 MMbpd. Commercial crude oil stocks (excluding the Strategic Petroleum Reserve) decreased by 3.9 MMbbls. At 449.1 MMbbls, crude oil inventory is 2% above the 5 year average.  
 
-Total commercial petroleum inventories decreased last week by 17.9 million barrels last week.  Since 1990, only 4 weeks have exceeded this drawdown.  U.S. commercial crude oil inventories (excluding those in the Strategic Petroleum Reserve) decreased by 8.6 million barrels from the previous week. Again, this is another historic drawdown.  At 445.9 million barrels, U.S. crude oil inventories are about 3% above the five year average for this time of year. 
-
-The large drawdowns are dominated by PADD3 where stocks dropped 6.7 million barrels. This can be explaine din part by an import drop of 1.6 million barrles, strong exports of 3.4 million barrels.  The last two week export numbers have exceeded anythng observed over the past five years.  It would be nice to see data showing where those cargoes are going..?
+Crude oil supply and demand was notable given refinery inputs of 16 MMbpd.  The input number is high given refinery maintenance and operated capacity of 87.6%.  Imports of 6.7 MMbpd are again much lower than normal and have declined by another 255 Mbpd.  Exports of 2.5 MMbpd are strong, but are far below the reported peak of 3.7 MMbd observed 3 weeks ago when China buying was first reported.  The unexplained adjustment term in the supply/demand profile shows a relatively large loss of 732Mbpd and might again be explained by reporting lags in PADD3 tied to China trade. 
 
 **Gasoline**
      
-Total motor gasoline inventories decreased by 1.9 million barrels last week and are about 3% above the five year average for this time of year. Finished gasoline and blending components inventories both decreased last week. Total motor gasoline imports (including both finished gasoline and gasoline blending components) last week averaged 473,000 barrels per day
+Total motor gasoline inventories decreased by 4.6 MMbbls last week and are about 2% above the five year average. Gasoline production decreased last week, averaging 9.7 MMbpd and gasoline imports averaged 573Mpd (including both finished products and blending components).
 
-**Distallates**
+**Distillates**
      
-Distillate fuel inventories decreased by 0.3 million barrels last week and are about 2% below the five year average for this time of year. Distillate fuel imports averaged 331,000 barrels per day.
+Distillate fuel inventories increased 0.3 MMbbls last week and are 1% below the five year average for this time of year. Distillate production decreased last week, averaging 4.9MMbpd.  Fuel imports averaged 238Mpd.
+
+**Spot Prices**
+    
+WTI at Cushing was priced at \$55.77 on March 8, 2019.  This is only \$0.01 higher versus a week ago, but remains \$6.25 lower thana year ago.  The spot price of conventional gasoline in New York Harbor was \$1.736 per gallon, \$0.040 less than last weeks price and \$0.027 lower than a year ago. The spot price for ULSD in NYH was $1.974 per gallon.  Current prices are \$0.012 above last week's price and a whopping \$0.179 over a year ago, reflecting increased demand for low sulfur products in the marine market. 
    
 
 ### US Petroleum Balance
@@ -210,17 +217,16 @@ library(kableExtra)
 kable(tbl2, digits = 1, format.args = list(big.mark = ",")) %>%
       kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
-Note on stock changes: Storage withdrawls are shown in this table only as positive supply for the market like production; storage injections are shown as negative supply like exports. This is proper for mass balance reporting.
+<font size="2"> Notes: Storage withdrawls are shown here in the stock change as positive supply for the market like production; storage injections are shown as negative supply like exports. This is proper for mass balance reporting. The adjustment term is the amount of supply required to balance the market.  The volume reflected here is some combination of eia measurement error, pipeline line pack and system losses.  A positive adjustment represents new supply for the market and a negative adjustment represents less supply for the market. </font>
     
-Note on adjustment: The adjustment term is the amount of supply required to balance the market.  It is assumed that this quantity correlates strongly with pipeline line pack.  A positive adjustment represents new supply for the market (less line pack) and a negative adjustment represents less supply for the market (more line pack). 
-
+    
 ![](/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/image/cl_balances.png)
 
    
 ### US Crude Oil Storage
 *(Thousand Barrels)*
     
-Does not include stocks in pipeline (see eia category ID 397940 to get monthly time series IDs for pipeline fill)
+Excludes the Strategic Petroleum Reserve.  Also does not include stocks in pipeline (see eia category ID 397940 to get monthly time series IDs for pipeline fill)
 
 
 ```{r cl_stocks1, eval=TRUE, echo=FALSE, results=FALSE}
@@ -255,15 +261,15 @@ current.cl_stocks <- c(pull(tail(cl_cushing, n = 2)[2, "cl_cushing"]),
                        pull(tail(cl_padd3, n = 2)[2, "cl_padd3"]),
                        pull(tail(cl_padd4, n = 2)[2, "cl_padd4"]),
                        pull(tail(cl_padd5, n = 2)[2, "cl_padd5"]),
-                       pull(tail(cl_total, n = 2)[2, "cl_total"]))
+                       pull(tail(cl_commercial, n = 2)[2, "cl_commercial"]))
 prior.cl_stocks <- c(pull(tail(cl_cushing, n = 2)[1, "cl_cushing"]),
                      pull(tail(cl_padd1, n = 2)[1, "cl_padd1"]),
                      pull(tail(cl_padd2, n = 2)[1, "cl_padd2"]),
                      pull(tail(cl_padd3, n = 2)[1, "cl_padd3"]),
                      pull(tail(cl_padd4, n = 2)[1, "cl_padd4"]),
                      pull(tail(cl_padd5, n = 2)[1, "cl_padd5"]),
-                     pull(tail(cl_total, n = 2)[1, "cl_total"]))
-tbl4 <- tibble(Crude.Stocks = c("Cushing", "PADD1", "PADD2", "PADD3",
+                     pull(tail(cl_commercial, n = 2)[1, "cl_commercial"]))
+tbl4 <- tibble(Commercial.Stocks = c("Cushing", "PADD1", "PADD2", "PADD3",
                                 "PADD4", "PADD5", "Total"),
                current = current.cl_stocks,
                prior = prior.cl_stocks) %>%
