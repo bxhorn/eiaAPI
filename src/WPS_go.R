@@ -8,13 +8,17 @@
 # License:      GPL (>=2)
 #
 # Description:  Wrapper script to batch process the generation of a custom report
-#               using data from the eia Weekly Petroleum Status Report.  The script
-#               sources files to configure the workspace, to batch process eia data
-#               retrieval, to generate data plots and to render an R Mardown file in
-#               HTML format with a custom file name.
+#               using data from the eia Weekly Petroleum Status Report.
 #
-# Details:      Manuualy update the YAML header in the R Markdown file with eia report
-#               date and week number
+# Details:      The script sources multiple files in order to:
+#
+#                   - configure the workspace,
+#                   - batch process eia data reitrieval and table creation
+#                   - generate data plots and
+#                   - render an R Mardown report in HTML format
+#
+#               Prior to running, manuualy update the YAML header in the R Markdown
+#               file as the subtitle requires the eia report date and week number
 #
 # Dev.Notes:    NA
 #
@@ -46,6 +50,7 @@ source("/home/bxhorn/Dropbox/Trading/R_Projects/eiaAPI/src/WPS_plot.R")
 ##----------------------------------------------------------------------------------------##
 
 # 2. Render HTML Report
-temp.file <- paste0("WPS.", gsub("-","", pull(test[1,1])), ".html")
-rmarkdown::render('WPS_report.Rmd', output_file = temp.file)
+report.file <- paste0(report.path, "WPS_report.Rmd")
+wps.output <- paste0("WPS.", gsub("-","", pull(test[1,1])), ".html")
+rmarkdown::render(report.file, output_file = wps.output)
 ##----------------------------------------------------------------------------------------##

@@ -186,8 +186,8 @@ prior.supply <- c(pull(tail(cl_production, n = 2)[1, "cl_production"]),
                     -1 * pull(tail(cl_exports, n = 2)[1, "cl_exports"]),
                     -1 * prior.stock.change /7,
                     pull(tail(refinery.runs, n = 2)[1, "refinery.runs"]))
-current.adj <- sum(current.supply[1:4]) - current.supply[5]
-prior.adj <- sum(prior.supply[1:4]) - prior.supply[5]
+current.adj <- current.supply[5] - sum(current.supply[1:4])
+prior.adj <- prior.supply[5] - sum(prior.supply[1:4])
 
 tbl2 <- tibble(Mass.Balance = c("Production", "Imports", "Exports", "Stock.Change",
                                 "Adjustment", "Refinery.Inputs"),
@@ -227,14 +227,14 @@ current.cl_stocks <- c(pull(tail(cl_cushing, n = 2)[2, "cl_cushing"]),
                        pull(tail(cl_padd3, n = 2)[2, "cl_padd3"]),
                        pull(tail(cl_padd4, n = 2)[2, "cl_padd4"]),
                        pull(tail(cl_padd5, n = 2)[2, "cl_padd5"]),
-                       pull(tail(cl_total, n = 2)[2, "cl_total"]))
+                       pull(tail(cl_commercial, n = 2)[2, "cl_commercial"]))
 prior.cl_stocks <- c(pull(tail(cl_cushing, n = 2)[1, "cl_cushing"]),
                      pull(tail(cl_padd1, n = 2)[1, "cl_padd1"]),
                      pull(tail(cl_padd2, n = 2)[1, "cl_padd2"]),
                      pull(tail(cl_padd3, n = 2)[1, "cl_padd3"]),
                      pull(tail(cl_padd4, n = 2)[1, "cl_padd4"]),
                      pull(tail(cl_padd5, n = 2)[1, "cl_padd5"]),
-                     pull(tail(cl_total, n = 2)[1, "cl_total"]))
+                     pull(tail(cl_commercial, n = 2)[1, "cl_commercial"]))
 tbl4 <- tibble(Crude.Stocks = c("Cushing", "PADD1", "PADD2", "PADD3",
                                 "PADD4", "PADD5", "Total"),
                current = current.cl_stocks,
