@@ -978,7 +978,7 @@ p6a <- ggplot(temp.dat, aes(x = week, y = ho_total, group = year, color = as.fac
      scale_x_continuous(breaks = seq(0, 52, 4)) +
      scale_color_manual(values = temp.color) +
      scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
-     labs(title = paste0("US Gasoline Stocks"),
+     labs(title = paste0("US Distillate Stocks"),
           subtitle = temp.subtitle,
           caption = "Data from eia using OpenDat API",
           x = "Production Week",
@@ -1013,7 +1013,7 @@ p6b <- ggplot(temp.dat, aes(x = week, y = ho_padd1, group = year, color = as.fac
      scale_x_continuous(breaks = seq(0, 52, 4)) +
      scale_color_manual(values = temp.color) +
      scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
-     labs(title = paste0("US Gasoline Storage: PADD-1"),
+     labs(title = paste0("US Distillate Storage: PADD-1"),
           subtitle = temp.subtitle,
           caption = "Data from eia using OpenDat API",
           x = "Production Week",
@@ -1048,7 +1048,7 @@ p6c <- ggplot(temp.dat, aes(x = week, y = ho_padd2, group = year, color = as.fac
      scale_x_continuous(breaks = seq(0, 52, 4)) +
      scale_color_manual(values = temp.color) +
      scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
-     labs(title = paste0("US Gasoline Storage: PADD-2"),
+     labs(title = paste0("US Distillate Storage: PADD-2"),
           subtitle = temp.subtitle,
           caption = "Data from eia using OpenDat API",
           x = "Production Week",
@@ -1083,7 +1083,7 @@ p6d <- ggplot(temp.dat, aes(x = week, y = ho_padd3, group = year, color = as.fac
      scale_x_continuous(breaks = seq(0, 52, 4)) +
      scale_color_manual(values = temp.color) +
      scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
-     labs(title = paste0("US Gasoline Storage: PADD-3"),
+     labs(title = paste0("US Distillate Storage: PADD-3"),
           subtitle = temp.subtitle,
           caption = "Data from eia using OpenDat API",
           x = "Production Week",
@@ -1118,7 +1118,7 @@ p6e <- ggplot(temp.dat, aes(x = week, y = ho_padd4, group = year, color = as.fac
      scale_x_continuous(breaks = seq(0, 52, 4)) +
      scale_color_manual(values = temp.color) +
      scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
-     labs(title = paste0("US Gasoline Storage: PADD-4"),
+     labs(title = paste0("US Distillate Storage: PADD-4"),
           subtitle = temp.subtitle,
           caption = "Data from eia using OpenDat API",
           x = "Production Week",
@@ -1153,7 +1153,7 @@ p6f <- ggplot(temp.dat, aes(x = week, y = ho_padd5, group = year, color = as.fac
      scale_x_continuous(breaks = seq(0, 52, 4)) +
      scale_color_manual(values = temp.color) +
      scale_shape_manual(values = c(0, 2, 5, 6, 8, 16)) +
-     labs(title = paste0("US Gasoline Storage: PADD-5"),
+     labs(title = paste0("US Distillate Storage: PADD-5"),
           subtitle = temp.subtitle,
           caption = "Data from eia using OpenDat API",
           x = "Production Week",

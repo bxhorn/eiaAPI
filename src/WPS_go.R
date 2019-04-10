@@ -17,15 +17,15 @@
 #                   - generate data plots and
 #                   - render an R Mardown report in HTML format
 #
-#               Prior to running, manuualy update the YAML header in the R Markdown
-#               file as the subtitle requires the eia report date and week number
+#               Prior to running, manually update the YAML header in the R Markdown
+#               file (i.e. the subtitle requires the eia report date and week number)
 #
 # Dev.Notes:    NA
 #
 # Depends:      See the configuration script Config_CL.R in project config folder;
 #               See source file WPS_map.R for core data inputs and tables.
 #               See source file WPS_plot.R for data visualizations.
-#               See R Markdown file WPS_report.Rmd for HTML file genenration
+#               See R Markdown file WPS_report.Rmd for HTML file generation
 #               See the custom functions in eiaAPI.R for API interface functions.
 #               API use requires a security key obtained through eia registration.
 #
