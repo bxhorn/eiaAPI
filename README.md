@@ -15,8 +15,8 @@ Details:     		This package provides a comprehensive toolset for searching and r
 Dev.Notes:   		NA
 
 Depends:      		See config_CL.R file in config directory
--------------------------------------------------------------------------------------
 
+***
 
 
 
