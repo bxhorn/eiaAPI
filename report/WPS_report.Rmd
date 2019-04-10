@@ -1,8 +1,8 @@
 ---
 title: "Weekly Petroleum Status Report" 
 author: "Brad Horn"
-date: "08-Mar-2019  Week 10"
-output:
+date: "29-Mar-2019  Week 13"
+output3:
   html_document: 
     theme: cerulean
     highlight: haddock
@@ -42,26 +42,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **Stock Changes**
      
-Total commercial petroleum inventories decreased in the last week by 10.2 MMbls.  Once again, we are seeing changes significantly larger than the mean, consistent with the large US production profile. The change was dominated by seasonal declines in gasoline (4.6MMbbls), followed by crude oil (3.9 MMbbls) and other oils (2.1 MMbbls). Distillate stocks increased a modest 0.4 MMbbls.
+Total commercial petroleum inventories decreased in the last week by 7.2 MMbls.  The change is attributed to crude oil alone since stock declines in refined products are offset equally by increased stocks for other fuels.  
     
 **Crude Oil**
      
-U.S. crude oil production averaged 12.0 MMbpd, down from 12.1 MMbpd. Commercial crude oil stocks (excluding the Strategic Petroleum Reserve) decreased by 3.9 MMbbls. At 449.1 MMbbls, crude oil inventory is 2% above the 5 year average.  
+U.S. crude oil production averaged 12.2 MMbpd, up from 12.1 MMbpd. Commercial crude oil stocks (excluding the Strategic Petroleum Reserve) by 1.03 MMbbls/day. At 449.5 MMbbls, crude oil inventory are at the 5 year average.  
 
-Crude oil supply and demand was notable given refinery inputs of 16 MMbpd.  The input number is high given refinery maintenance and operated capacity of 87.6%.  Imports of 6.7 MMbpd are again much lower than normal and have declined by another 255 Mbpd.  Exports of 2.5 MMbpd are strong, but are far below the reported peak of 3.7 MMbd observed 3 weeks ago when China buying was first reported.  The unexplained adjustment term in the supply/demand profile shows a relatively large loss of 732Mbpd and might again be explained by reporting lags in PADD3 tied to China trade. 
+U.S. crude oil refinery inputs averaged 15.8 million barrels per day during the week ending March 29, 2019, which was 18,000 barrels per day more than the previous week’s average. Refineries operated at 86.4% of capacity.  U.S. crude oil imports averaged 6.8 million barrels per day last week, up by 223,000 barrels per day from the previous week. Over the past four weeks, crude oil imports averaged about 6.7 million barrels per day, 12.1% less than the same four-week period last year. Exports of 2.7 MMbpd are strong, albeit weaker than the past 2 weeks.   
 
 **Gasoline**
      
-Total motor gasoline inventories decreased by 4.6 MMbbls last week and are about 2% above the five year average. Gasoline production decreased last week, averaging 9.7 MMbpd and gasoline imports averaged 573Mpd (including both finished products and blending components).
+Gasoline production increased last week, averaging 9.8 million barrels per day. Total motor gasoline inventories decreased by 1.8 million barrels last week and are about 2% above the five year average for this time of year. Finished gasoline inventories increased while blending components inventories decreased last week. 
 
 **Distillates**
      
-Distillate fuel inventories increased 0.3 MMbbls last week and are 1% below the five year average for this time of year. Distillate production decreased last week, averaging 4.9MMbpd.  Fuel imports averaged 238Mpd.
+Distillate fuel production decreased last week, averaging 4.9 million barrels per day. Distillate fuel inventories decreased by 2.0 million barrels last week and are about 6% below the five year average for this time of year. 
 
 **Spot Prices**
     
-WTI at Cushing was priced at \$55.77 on March 8, 2019.  This is only \$0.01 higher versus a week ago, but remains \$6.25 lower thana year ago.  The spot price of conventional gasoline in New York Harbor was \$1.736 per gallon, \$0.040 less than last weeks price and \$0.027 lower than a year ago. The spot price for ULSD in NYH was $1.974 per gallon.  Current prices are \$0.012 above last week's price and a whopping \$0.179 over a year ago, reflecting increased demand for low sulfur products in the marine market. 
-   
+WTI at Cushing was priced at \$57.81 on March 15, 2019.  Brent was price at \$65.71 or \$7,90 over WTI.  The spot price of conventional gasoline in New York Harbor was \$1.797 per gallon, \$0.090 more than last weeks price and \$0.04 lower than a year ago. The spot price for ULSD in NYH was $1.964 per gallon.  Current prices are \$0.016 below last week's price. 
+ 
 
 ### US Petroleum Balance
 *(Million Barrels)*
